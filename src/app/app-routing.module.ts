@@ -7,10 +7,12 @@ import { HomeComponent } from './home/home.component';
 import { UsersComponent } from './users/users.component';
 import { Roles, AdminGuard } from './users/roles';
 import { ShowDialogOnErrorErrorHandler } from './common/dialog';
+import { ManageComponent } from './manage/manage.component';
 
 
 const routes: Routes = [
   { path: 'Home', component: HomeComponent },
+  { path: 'הגדרות', component: ManageComponent },
   { path: 'User Accounts', component: UsersComponent, canActivate: [AdminGuard] },
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: '**', redirectTo: '/Home', pathMatch: 'full' }
