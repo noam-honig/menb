@@ -25,6 +25,7 @@ import { DialogService } from './common/dialog';
 import { AdminGuard } from './users/roles';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ManageComponent } from './manage/manage.component';
+import { BottlesComponent } from './bottles/bottles.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { ManageComponent } from './manage/manage.component';
     HomeComponent,
     YesNoQuestionComponent,
     InputAreaComponent,
-    ManageComponent
+    ManageComponent,
+    BottlesComponent
   ],
   imports: [
     BrowserModule,

@@ -8,10 +8,12 @@ import { UsersComponent } from './users/users.component';
 import { Roles, AdminGuard } from './users/roles';
 import { ShowDialogOnErrorErrorHandler } from './common/dialog';
 import { ManageComponent } from './manage/manage.component';
+import { BottlesComponent } from './bottles/bottles.component';
 
 
 const routes: Routes = [
   { path: 'Home', component: HomeComponent },
+  { path: 'בקבוקים', component: BottlesComponent },
   { path: 'הגדרות', component: ManageComponent },
   { path: 'User Accounts', component: UsersComponent, canActivate: [AdminGuard] },
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
