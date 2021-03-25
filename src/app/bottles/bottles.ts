@@ -47,10 +47,10 @@ export class Bottles extends IdEntity {
         caption: "נמצא ב"
     });
     entryDate = new DateColumn("תאריך כניסה לאוסף");
+    origin = new StringColumn("הגיע מ");
     cost = new NumberColumn({ decimalDigits: 2, caption: 'עלות' });
     exitDate = new DateColumn("תאריך הוצאה מהואסף");
     exitReason = new StringColumn("סיבה להוצאה מאוסף");
-    origin = new StringColumn("הגיע מ");
     worth = new NumberColumn({ caption: "שווי", decimalDigits: 2 });
 
 

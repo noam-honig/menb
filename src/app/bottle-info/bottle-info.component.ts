@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Bottles } from '../bottles/bottles';
 import { DataAreaSettings } from '@remult/core';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-bottle-info',
@@ -9,23 +10,36 @@ import { DataAreaSettings } from '@remult/core';
 })
 export class BottleInfoComponent implements OnInit {
 
-  constructor() { }
-  args:{
-    bottle:Bottles
+  constructor(private dialog: MatDialogRef<any>) { }
+  args: {
+    bottle: Bottles
   }
-  area:DataAreaSettings;
+  area: DataAreaSettings;
   ngOnInit() {
     let b = this.args.bottle;
     this.area = new DataAreaSettings({
-      columnSettings:()=>[
+      columnSettings: () => [
         b.country,
         b.name,
         b.manufacturar,
         b.comments,
-        [b.bottleType,b.shape],
-        b.shapeComments
+        [b.bottleType, b.shape],
+        b.shapeComments,
+        b.type,
+        b.subType,
+        b.quantity,
+        b.state,
+        b.location,
+        [b.entryDate, b.origin],
+        [b.cost, b.worth],
+        [b.exitDate, b.exitReason]
+
       ]
     });
+  }
+  async save() {
+    await this.args.bottle.save();
+    this.dialog.close();
   }
 
 }
