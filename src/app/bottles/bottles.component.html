@@ -1,1 +1,19 @@
-<data-grid [settings]="bottles"></data-grid>
+<div class="full-page">
+<div>
+    <div>
+      <div class="chart">
+        <canvas baseChart style="max-width:300px"
+          [data]="pieChartData"
+          [labels]="pieChartLabels"
+          [chartType]="pieChartType"
+          [options]="pieChartOptions"
+          
+          [colors]="pieChartColors"
+          [legend]="pieChartLegend">
+        </canvas>
+      </div>
+    </div>
+  </div>
+<data-grid [settings]="bottles" class="grow-item"></data-grid>
+
+</div>

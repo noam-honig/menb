@@ -27,6 +27,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ManageComponent } from './manage/manage.component';
 import { BottlesComponent } from './bottles/bottles.component';
 import { BottleInfoComponent } from './bottle-info/bottle-info.component';
+import { ChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { BottleInfoComponent } from './bottle-info/bottle-info.component';
     MatMenuModule,
     RemultModule,
     MatTabsModule,
+    ChartsModule,
     BrowserAnimationsModule
   ],
   providers: [DialogService, AdminGuard],
