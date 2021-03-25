@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import {MatTabsModule} from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
@@ -26,6 +26,7 @@ import { AdminGuard } from './users/roles';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ManageComponent } from './manage/manage.component';
 import { BottlesComponent } from './bottles/bottles.component';
+import { BottleInfoComponent } from './bottle-info/bottle-info.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { BottlesComponent } from './bottles/bottles.component';
     YesNoQuestionComponent,
     InputAreaComponent,
     ManageComponent,
-    BottlesComponent
+    BottlesComponent,
+    BottleInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -59,6 +61,6 @@ import { BottlesComponent } from './bottles/bottles.component';
   ],
   providers: [DialogService, AdminGuard],
   bootstrap: [AppComponent],
-  entryComponents: [YesNoQuestionComponent, InputAreaComponent]
+  entryComponents: [YesNoQuestionComponent, InputAreaComponent, BottleInfoComponent]
 })
 export class AppModule { }

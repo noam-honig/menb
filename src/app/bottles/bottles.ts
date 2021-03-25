@@ -1,28 +1,60 @@
-import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn } from '@remult/core';
+import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context } from '@remult/core';
+import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
 
 @EntityClass
 export class Bottles extends IdEntity {
-    country = new StringColumn("מדינה");
+    country = new StringColumn({
+        dataControlSettings: () => ({
+            valueList: this.context.for(Countries).getValueList()
+        }),
+        caption: "מדינה",
+    });
     name = new StringColumn("שם");
-    yaran = new StringColumn("יצרן");
+    manufacturar = new StringColumn("יצרן");
     comments = new StringColumn("הערות");
-    bottleType = new StringColumn("סוג בקבוק");
-    shape = new StringColumn("צורה");
+    bottleType = new StringColumn({
+        dataControlSettings: () => ({
+            valueList: this.context.for(BottleTypes).getValueList()
+        }),
+        caption: "סוג בקבוק"
+    });
+    shape = new StringColumn({
+        dataControlSettings: () => ({
+            valueList: this.context.for(Shapes).getValueList()
+        }),
+        caption: "צורה"
+    });
     shapeComments = new StringColumn("הערות לצורה");
-    type = new StringColumn("סוג");
+    type = new StringColumn({
+        dataControlSettings: () => ({
+            valueList: this.context.for(Types).getValueList()
+        }),
+        caption: "סוג"
+    });
     subType = new StringColumn("תת סוג");
     quantity = new NumberColumn("כמות");
-    state = new StringColumn("מצב");
-    location = new StringColumn("נמצא ב");
+    state = new StringColumn({
+        dataControlSettings: () => ({
+            valueList: this.context.for(States).getValueList()
+        }),
+        caption: "מצב"
+    });
+    location = new StringColumn({
+
+        dataControlSettings: () => ({
+            valueList: this.context.for(Locations).getValueList()
+        }),
+        caption: "נמצא ב"
+    });
     entryDate = new DateColumn("תאריך כניסה לאוסף");
     cost = new NumberColumn({ decimalDigits: 2, caption: 'עלות' });
     exitDate = new DateColumn("תאריך הוצאה מהואסף");
     exitReason = new StringColumn("סיבה להוצאה מאוסף");
     origin = new StringColumn("הגיע מ");
-    worth = new NumberColumn("שווי");
+    worth = new NumberColumn({ caption: "שווי", decimalDigits: 2 });
 
 
-    constructor() {
+    constructor(private context: Context) {
         super({
             name: "Bottles",
             caption: "בקבוקים",
