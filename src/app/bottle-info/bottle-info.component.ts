@@ -25,6 +25,7 @@ export class BottleInfoComponent implements OnInit {
         b.comments,
         [b.bottleType, b.shape],
         b.shapeComments,
+        [b.alcohol,b.volume],
         b.type,
         b.subType,
         b.quantity,

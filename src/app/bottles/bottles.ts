@@ -46,6 +46,9 @@ export class Bottles extends IdEntity {
         }),
         caption: "נמצא ב"
     });
+    alcohol = new NumberColumn("אחוז אלכוהול");
+    volume = new NumberColumn("נפח");
+
     entryDate = new DateColumn("תאריך כניסה לאוסף");
     origin = new StringColumn("הגיע מ");
     cost = new NumberColumn({ decimalDigits: 2, caption: 'עלות' });
