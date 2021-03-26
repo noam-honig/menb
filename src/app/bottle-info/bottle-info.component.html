@@ -1,9 +1,24 @@
-<div mat-dialog-content>
+<div mat-dialog-content *ngIf="args.bottle">
 
-    <data-area [settings]="area"></data-area>
-    <img *ngIf="image" [src]="image.image.value">
+    <div>
+        <div class="two-columns">
+            <data-area [settings]="rightArea"></data-area>
+            <div style="text-align: center;">
+                <data-area [settings]="leftArea"></data-area>
+                <div>
+                    <img *ngIf="image" [src]="image.image.value" style="max-width:100%">
+                </div>
+                <button mat-mini-fab color="primary" aria-label="העלה תמונה" (click)="upload()">
+                    <mat-icon>photo_camera</mat-icon>
+                </button>
+            </div>
+        </div>
+        <data-area [settings]="bottomArea"></data-area>
+    </div>
 </div>
 <div mat-dialog-actions>
-    <button mat-raised-button (click)="save()">שמור</button>
-    <button mat-raised-button (click)="upload()">תמונה</button>
+    <button mat-raised-button (click)="close()">בטל</button>
+    <button mat-raised-button (click)="save()" color="primary">שמור</button>
+
+
 </div>

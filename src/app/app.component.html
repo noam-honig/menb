@@ -5,15 +5,15 @@
     </button>
     <span class="toolbar-title">{{currentTitle()}}</span>
     <ng-container *ngIf="!context.isSignedIn()">
-      <button mat-flat-button color="primary" (click)="signIn()">Sign In</button>
-      <button mat-flat-button color="primary" (click)="signUp()">Sign Up</button>
+      <button mat-flat-button color="primary" (click)="signIn()">כניסה</button>
+      <button mat-flat-button color="primary" (click)="signUp()">הרשמה</button>
     </ng-container>
     <ng-container *ngIf="context.isSignedIn()">
       <button mat-flat-button color="primary" [matMenuTriggerFor]="menu">{{context.user.name}}</button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="updateInfo()">Update Info</button>
-        <button mat-menu-item (click)="changePassword()">Change Password</button>
-        <button mat-menu-item (click)="signOut()">Sign Out</button>
+        <button mat-menu-item (click)="updateInfo()">עדכון פרטים</button>
+        <button mat-menu-item (click)="changePassword()">עדכון סיסמה</button>
+        <button mat-menu-item (click)="signOut()">יציאה</button>
       </mat-menu>
     </ng-container>
   </mat-toolbar>

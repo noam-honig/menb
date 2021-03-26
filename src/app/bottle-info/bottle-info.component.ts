@@ -16,10 +16,12 @@ export class BottleInfoComponent implements OnInit {
     bottle: Bottles
   }
   image: BottleImages;
-  area: DataAreaSettings;
+  rightArea: DataAreaSettings;
+  leftArea: DataAreaSettings;
+  bottomArea: DataAreaSettings;
   ngOnInit() {
     let b = this.args.bottle;
-    this.area = new DataAreaSettings({
+    this.rightArea = new DataAreaSettings({
       columnSettings: () => [
         b.country,
         b.name,
@@ -28,9 +30,24 @@ export class BottleInfoComponent implements OnInit {
         [b.bottleType, b.shape],
         b.shapeComments,
         [b.alcohol, b.volume],
-        b.type,
-        b.subType,
+       
+
+      ]
+    });
+    this.leftArea = new DataAreaSettings({
+      columnSettings: () => [
+ 
+        
+        [b.type,
+        b.subType],
         b.quantity,
+        
+
+      ]
+    });
+    this.bottomArea = new DataAreaSettings({
+      columnSettings: () => [
+      
         b.state,
         b.location,
         [b.entryDate, b.origin],
@@ -46,6 +63,10 @@ export class BottleInfoComponent implements OnInit {
   }
   async save() {
     await this.args.bottle.save();
+    this.dialog.close();
+  }
+  close() {
+    this.args.bottle.undoChanges();
     this.dialog.close();
   }
   async upload() {

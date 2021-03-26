@@ -15,7 +15,7 @@ const routes: Routes = [
   { path: 'Home', component: HomeComponent },
   { path: 'בקבוקים', component: BottlesComponent, canActivate: [AdminGuard] },
   { path: 'הגדרות', component: ManageComponent, canActivate: [AdminGuard] },
-  { path: 'User Accounts', component: UsersComponent, canActivate: [AdminGuard] },
+  { path: 'משתמשים', component: UsersComponent, canActivate: [AdminGuard] },
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: '**', redirectTo: '/Home', pathMatch: 'full' }
 
