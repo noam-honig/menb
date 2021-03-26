@@ -8,7 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "dev-ng": "ng serve  --proxy-config proxy.conf.json",
+    "dev-ng": "ng serve  --proxy-config proxy.conf.json --host 10.0.0.6",
     "dev-node": "./node_modules/.bin/tsc-watch -p tsconfig.server.json --onSuccess \"npm run start\""
   },
   "private": true,
