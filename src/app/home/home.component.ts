@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit {
             ctx.drawImage(img, 0, 0);
 
             var MAX_WIDTH = 300;
-            var MAX_HEIGHT = 400;
+            var MAX_HEIGHT = 500;
             var width = img.width;
             var height = img.height;
 
