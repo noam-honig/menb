@@ -1,9 +1,10 @@
 import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn } from '@remult/core';
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
+import { Roles } from '../users/roles';
 
 @EntityClass
 export class Bottles extends IdEntity {
-  
+
     name = new StringColumn("שם");
     manufacturer = new StringColumn("יצרן");
     country = new StringColumn({
@@ -63,7 +64,8 @@ export class Bottles extends IdEntity {
         super({
             name: "Bottles",
             caption: "בקבוקים",
-            allowApiCRUD: true,
+            allowApiCRUD: Roles.admin,
+            defaultOrderBy: () => this.name,
             saving: () => {
                 if (this.isNew())
                     this.createDate.value = new Date();
@@ -79,7 +81,7 @@ export class BottleImages extends IdEntity {
     constructor() {
         super({
             name: 'bottleImages',
-            allowApiCRUD: true
+            allowApiCRUD: Roles.admin
         });
     }
 }

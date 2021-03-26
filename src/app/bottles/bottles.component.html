@@ -1,5 +1,5 @@
 <div class="full-page">
-<!-- <div>
+  <!-- <div>
     <div>
       <div class="chart">
         <canvas baseChart style="max-width:300px"
@@ -14,9 +14,18 @@
       </div>
     </div>
   </div> -->
-<data-grid [settings]="bottles" class="grow-item"></data-grid>
+  <div style="display: flex;
+  width: 100%;
+  
+  justify-content: space-between;
+  align-items: center;">
+    <data-control [column]="searchString" style="    flex-grow: 1;
+    margin-left: 10px;"></data-control>
+    <div>{{bottles.totalRows}} בקבוקים</div>
+  </div>
+  <data-grid [settings]="bottles" class="grow-item"></data-grid>
 
 </div>
 <mat-form-field style="display: none;">
-<input matInput>
+  <input matInput>
 </mat-form-field>

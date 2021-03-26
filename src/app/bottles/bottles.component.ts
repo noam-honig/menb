@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Context } from '@remult/core';
+import { Context, StringColumn } from '@remult/core';
 import { Bottles } from './bottles';
 import { BottleInfoComponent } from '../bottle-info/bottle-info.component';
 import { ChartType, ChartOptions } from 'chart.js';
@@ -9,6 +9,7 @@ import { ImportExcelComponent } from './import-excel.component';
 import { DialogService } from '../common/dialog';
 import { columnOrderAndWidthSaver } from '../common/columnOrderAndWidthSaver';
 import { UploadImageComponent } from './upload-image.component';
+import { BusyService } from '@remult/angular';
 
 @Component({
   selector: 'app-bottles',
@@ -17,14 +18,21 @@ import { UploadImageComponent } from './upload-image.component';
 })
 export class BottlesComponent implements OnInit {
 
-  constructor(private context: Context, private dialog: DialogService) { }
+  constructor(private context: Context, private dialog: DialogService, private busy: BusyService) { }
+  searchString = new StringColumn({
+    caption: 'חפש בקבוק',
+    valueChange: async () => {
+      // the call to `this.busy.donotWait` causes the load products method to run without the "Busy" circle in the ui
+      await this.busy.donotWait(async () => await this.bottles.reloadData());
+    }
+  })
 
   bottles = this.context.for(Bottles).gridSettings({
     knowTotalRows: true,
     allowCRUD: true,
     allowDelete: false,
     showFilter: true,
-    confirmDelete: async b => await this.dialog.confirmDelete("בקבוק " + b.name.value),
+    
     gridButtons: [{
       name: 'קליטה מאקסל',
       click: async () => {
@@ -32,10 +40,15 @@ export class BottlesComponent implements OnInit {
         this.bottles.reloadData();
       }
     }],
+    where: p =>
+      // if there is a search value, search by it
+      this.searchString.value ? p.name.isContains(this.searchString)
+        : undefined
+    ,
     columnSettings: (b) => [
       ...b.columns.toArray().filter(x => x != b.id)
     ],
-    numOfColumnsInGrid:3,
+    numOfColumnsInGrid: 3,
     rowButtons: [{
       textInMenu: 'פרטים',
       icon: 'edit',
@@ -55,6 +68,16 @@ export class BottlesComponent implements OnInit {
           bottleId: b.id.value,
           afterUpload: () => { }
         })
+      }
+    },
+    {
+      textInMenu: 'מחק',
+      icon: 'delete',
+      
+      click: async (b) => {
+        if (await this.dialog.confirmDelete("בקבוק " + b.name.value)){
+          await b.delete();
+        }
       }
     }]
   })

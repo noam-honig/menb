@@ -1,4 +1,5 @@
 import { IdEntity, StringColumn, EntityClass } from '@remult/core';
+import { Roles } from '../users/roles';
 
 @EntityClass
 export class Countries extends IdEntity {
@@ -7,7 +8,8 @@ export class Countries extends IdEntity {
         super({
             name: "Countries",
             caption: "מדינות",
-            allowApiCRUD: true
+            defaultOrderBy: () => this.name,
+            allowApiCRUD: Roles.admin
         });
     }
 }
@@ -18,7 +20,8 @@ export class Types extends IdEntity {
         super({
             name: "Types",
             caption: "סוג",
-            allowApiCRUD: true
+            defaultOrderBy: () => this.name,
+            allowApiCRUD: Roles.admin
         });
     }
 }
@@ -29,7 +32,8 @@ export class BottleTypes extends IdEntity {
         super({
             name: "BottleType",
             caption: "סוג בקבוק",
-            allowApiCRUD: true
+            defaultOrderBy: () => this.name,
+            allowApiCRUD: Roles.admin
         });
     }
 }
@@ -39,8 +43,9 @@ export class Shapes extends IdEntity {
     constructor() {
         super({
             name: "Shape",
+            defaultOrderBy: () => this.name,
             caption: "צורה",
-            allowApiCRUD: true
+            allowApiCRUD: Roles.admin
         });
     }
 }
@@ -50,8 +55,9 @@ export class States extends IdEntity {
     constructor() {
         super({
             name: "State",
+            defaultOrderBy: () => this.name,
             caption: "מצב",
-            allowApiCRUD: true
+            allowApiCRUD: Roles.admin
         });
     }
 }
@@ -61,8 +67,9 @@ export class Locations extends IdEntity {
     constructor() {
         super({
             name: "Locations",
+            defaultOrderBy: () => this.name,
             caption: "נמצא ב",
-            allowApiCRUD: true
+            allowApiCRUD: Roles.admin
         });
     }
 }
