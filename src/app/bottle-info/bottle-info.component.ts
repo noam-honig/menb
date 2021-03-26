@@ -21,7 +21,7 @@ export class BottleInfoComponent implements OnInit {
       columnSettings: () => [
         b.country,
         b.name,
-        b.manufacturar,
+        b.manufacturer,
         b.comments,
         [b.bottleType, b.shape],
         b.shapeComments,

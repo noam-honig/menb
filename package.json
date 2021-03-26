@@ -28,6 +28,7 @@
     "@remult/core": "^2.2.5",
     "@remult/server": "^2.2.5",
     "@remult/server-postgres": "^2.2.5",
+    "@types/xlsx": "0.0.36",
     "chart.js": "^2.7.3",
     "compression": "^1.7.3",
     "dotenv": "^8.1.0",
@@ -41,6 +42,7 @@
     "reflect-metadata": "^0.1.12",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
+    "xlsx": "^0.16.9",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {

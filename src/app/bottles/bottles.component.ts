@@ -4,6 +4,10 @@ import { Bottles } from './bottles';
 import { BottleInfoComponent } from '../bottle-info/bottle-info.component';
 import { ChartType, ChartOptions } from 'chart.js';
 import { Countries } from '../manage/countries';
+import { MatPseudoCheckbox } from '@angular/material/core';
+import { ImportExcelComponent } from './import-excel.component';
+import { DialogService } from '../common/dialog';
+import { columnOrderAndWidthSaver } from '../common/columnOrderAndWidthSaver';
 
 @Component({
   selector: 'app-bottles',
@@ -12,9 +16,20 @@ import { Countries } from '../manage/countries';
 })
 export class BottlesComponent implements OnInit {
 
-  constructor(private context: Context) { }
+  constructor(private context: Context, private dialog: DialogService) { }
+  
   bottles = this.context.for(Bottles).gridSettings({
+    knowTotalRows: true,
     allowCRUD: true,
+    showFilter: true,
+    confirmDelete: async b => await this.dialog.confirmDelete("בקבוק " + b.name.value),
+    gridButtons: [{
+      name: 'קליטה מאקסל',
+      click: async () => {
+        await this.context.openDialog(ImportExcelComponent);
+        this.bottles.reloadData();
+      }
+    }],
     rowButtons: [{
       name: 'פרטים',
       icon: 'edit',
@@ -25,13 +40,16 @@ export class BottlesComponent implements OnInit {
       }
     }]
   })
+  columnSaver = new columnOrderAndWidthSaver(this.bottles);
 
   ngOnInit() {
     this.prepareChart();
+    this.columnSaver.load('bottles');
   }
 
   async prepareChart() {
-       this.pieChartLabels.splice(0);
+    return;
+    this.pieChartLabels.splice(0);
     this.pieChartData.splice(0);
     let map = new Map<string, number>();
     for await (let b of this.context.for(Bottles).iterate()) {
@@ -44,13 +62,12 @@ export class BottlesComponent implements OnInit {
 
 
     }
+    if ([...map.keys()].length == 0) {
+      map.set('', 1);
+    }
     this.pieChartLabels.push(...map.keys());
-
     this.pieChartData = [...map.values()];
-    console.log({
-      l: this.pieChartLabels,
-      d: this.pieChartData
-    })
+
   }
 
   public pieChartOptions: ChartOptions = {

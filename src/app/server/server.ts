@@ -13,6 +13,7 @@ import * as compression from 'compression';
 import * as passwordHash from 'password-hash';
 import '../app.module';
 import { PasswordColumn } from '../users/users';
+import { versionUpdate } from './version';
 
 config(); //loads the configuration from the .env file
 const pool = new Pool({
@@ -20,7 +21,8 @@ const pool = new Pool({
     ssl: process.env.DEV_MODE ? false : { rejectUnauthorized: false }// use ssl in production but not in development. the `rejectUnauthorized: false`  is required for deployment to heroku etc...
 });
 let database = new SqlDatabase(new PostgresDataProvider(pool));
-verifyStructureOfAllEntities(database); //This method can be run in the install phase on the server.
+versionUpdate(database); //This method can be run in the install phase on the server.
+
 
 PasswordColumn.passwordHelper = {
     generateHash: p => passwordHash.generate(p),

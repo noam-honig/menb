@@ -6,8 +6,8 @@ export class Countries extends IdEntity {
     constructor() {
         super({
             name: "Countries",
-            caption:"מדינות",
-            allowApiCRUD:true
+            caption: "מדינות",
+            allowApiCRUD: true
         });
     }
 }
@@ -17,8 +17,8 @@ export class Types extends IdEntity {
     constructor() {
         super({
             name: "Types",
-            caption:"סוג",
-            allowApiCRUD:true
+            caption: "סוג",
+            allowApiCRUD: true
         });
     }
 }
@@ -28,8 +28,8 @@ export class BottleTypes extends IdEntity {
     constructor() {
         super({
             name: "BottleType",
-            caption:"סוג בקבוק",
-            allowApiCRUD:true
+            caption: "סוג בקבוק",
+            allowApiCRUD: true
         });
     }
 }
@@ -39,8 +39,8 @@ export class Shapes extends IdEntity {
     constructor() {
         super({
             name: "Shape",
-            caption:"צורה",
-            allowApiCRUD:true
+            caption: "צורה",
+            allowApiCRUD: true
         });
     }
 }
@@ -50,8 +50,8 @@ export class States extends IdEntity {
     constructor() {
         super({
             name: "State",
-            caption:"מצב",
-            allowApiCRUD:true
+            caption: "מצב",
+            allowApiCRUD: true
         });
     }
 }
@@ -61,8 +61,8 @@ export class Locations extends IdEntity {
     constructor() {
         super({
             name: "Locations",
-            caption:"נמצא ב",
-            allowApiCRUD:true
+            caption: "נמצא ב",
+            allowApiCRUD: true
         });
     }
 }

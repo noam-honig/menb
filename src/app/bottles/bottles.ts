@@ -1,4 +1,4 @@
-import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context } from '@remult/core';
+import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn } from '@remult/core';
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
 
 @EntityClass
@@ -10,7 +10,7 @@ export class Bottles extends IdEntity {
         caption: "מדינה",
     });
     name = new StringColumn("שם");
-    manufacturar = new StringColumn("יצרן");
+    manufacturer = new StringColumn("יצרן");
     comments = new StringColumn("הערות");
     bottleType = new StringColumn({
         dataControlSettings: () => ({
@@ -46,7 +46,7 @@ export class Bottles extends IdEntity {
         }),
         caption: "נמצא ב"
     });
-    alcohol = new NumberColumn("אחוז אלכוהול");
+    alcohol = new NumberColumn({ caption: "אחוז אלכוהול", decimalDigits: 2 });
     volume = new NumberColumn("נפח");
 
     entryDate = new DateColumn("תאריך כניסה לאוסף");
@@ -55,13 +55,18 @@ export class Bottles extends IdEntity {
     exitDate = new DateColumn("תאריך הוצאה מהואסף");
     exitReason = new StringColumn("סיבה להוצאה מאוסף");
     worth = new NumberColumn({ caption: "שווי", decimalDigits: 2 });
+    createDate = new DateTimeColumn({ allowApiUpdate: false });
 
 
     constructor(private context: Context) {
         super({
             name: "Bottles",
             caption: "בקבוקים",
-            allowApiCRUD: true
+            allowApiCRUD: true,
+            saving: () => {
+                if (this.isNew())
+                    this.createDate.value = new Date();
+            }
         });
     }
 }
