@@ -12,12 +12,12 @@ export class HomeComponent implements OnInit {
 
   constructor() { }
   value = 0;
-  countries=0;
+  countries = 0;
 
   async ngOnInit() {
     HomeComponent.stats().then(x => {
       this.value = x.count;
-      this.countries= x.countries;
+      this.countries = x.countries;
     });
   }
   @ServerFunction({ allowed: true })
@@ -50,8 +50,11 @@ export class RunningNumberComponent implements OnInit {
     this.animateChange(delta);
   }
   display() {
-    let r = (this.theValue + this.balanceAnimationDelta).toFixed(0);
-    
+    let val = (this.theValue + this.balanceAnimationDelta);
+    if (isNaN(val))
+      return '';
+    let r = val.toFixed(0);
+
     return r;
   }
   theValue = 0;
