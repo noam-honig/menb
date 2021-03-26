@@ -19,7 +19,7 @@ export class UploadImageComponent implements OnInit {
         private matDialog: MatDialogRef<any>) { }
     args: {
         bottleId: string,
-        afterUpload: () => void
+        afterUpload: (image: string) => void
     }
 
     async onFileInput(eventArgs: any) {
@@ -63,20 +63,7 @@ export class UploadImageComponent implements OnInit {
 
                         var dataurl = canvas.toDataURL("image/png");
 
-                        let before = new Date();
-                        let im = await this.context.for(BottleImages).findFirst(b => b.bottleId.isEqualTo(this.args.bottleId));
-                        if (!im) {
-                            im = this.context.for(BottleImages).create();
-                            im.bottleId.value = this.args.bottleId;
-                        }
-                        im.image.value = dataurl; try {
-                            await im.save();
-                            this.dialog.info("תמונה הועלתה תוך" + ((new Date().valueOf() - before.valueOf()) / 1000).toFixed(1) + " שניות");
-                            this.args.afterUpload();
-                        }
-                        catch {
-
-                        }
+                        this.args.afterUpload(dataurl);
                         this.matDialog.close();
                     }
                     img.src = e.target.result.toString();

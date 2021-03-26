@@ -4,6 +4,14 @@ import { Roles } from '../users/roles';
 
 @EntityClass
 export class Bottles extends IdEntity {
+    async findImage() {
+        let r = await this.context.for(BottleImages).findFirst(x=>x.bottleId.isEqualTo(this.id));
+        if (!r){
+            r = this.context.for(BottleImages).create();
+            r.bottleId.value = this.id.value;
+        }
+        return r;
+    }
 
     name = new StringColumn("שם");
     manufacturer = new StringColumn("יצרן");

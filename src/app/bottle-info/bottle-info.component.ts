@@ -30,24 +30,24 @@ export class BottleInfoComponent implements OnInit {
         [b.bottleType, b.shape],
         b.shapeComments,
         [b.alcohol, b.volume],
-       
+
 
       ]
     });
     this.leftArea = new DataAreaSettings({
       columnSettings: () => [
- 
-        
+
+
         [b.type,
         b.subType],
         b.quantity,
-        
+
 
       ]
     });
     this.bottomArea = new DataAreaSettings({
       columnSettings: () => [
-      
+
         b.state,
         b.location,
         [b.entryDate, b.origin],
@@ -56,13 +56,15 @@ export class BottleInfoComponent implements OnInit {
 
       ]
     });
-    this.loadImage();
+    this.args.bottle.findImage().then(i => this.image = i);
   }
-  loadImage() {
-    this.context.for(BottleImages).findFirst(x => x.bottleId.isEqualTo(this.args.bottle.id.value)).then(x => this.image = x);
-  }
+
   async save() {
     await this.args.bottle.save();
+    if (this.image.image.value != this.image.image.originalValue) {
+      this.image.bottleId.value = this.args.bottle.id.value;
+      await this.image.save();
+    }
     this.dialog.close();
   }
   close() {
@@ -75,7 +77,7 @@ export class BottleInfoComponent implements OnInit {
     await this.context.openDialog(UploadImageComponent, x => x.args = {
       bottleId: this.args.bottle.id.value
       ,
-      afterUpload: () => this.loadImage()
+      afterUpload: (image) => this.image.image.value = image
     });
   }
 

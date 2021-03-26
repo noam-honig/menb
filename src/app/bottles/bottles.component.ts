@@ -66,7 +66,11 @@ export class BottlesComponent implements OnInit {
       click: async (b) => {
         this.context.openDialog(UploadImageComponent, x => x.args = {
           bottleId: b.id.value,
-          afterUpload: () => { }
+          afterUpload: async (image) => {
+            let i = await b.findImage();
+            i.image.value = image;
+            await i.save();
+          }
         })
       }
     },
