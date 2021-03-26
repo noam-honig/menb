@@ -84,7 +84,7 @@ export class PasswordColumn extends StringColumn {
 
     constructor(settings?: ColumnSettings<string>) {
         super({
-            ...{ caption: 'Password' },
+            ...{ caption: 'סיסמה' },
             ...settings,
             dataControlSettings: () => ({
                 inputType: 'password'

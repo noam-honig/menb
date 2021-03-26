@@ -18,7 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { RemultModule } from '@remult/angular';
 import { UsersComponent } from './users/users.component';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent, RunningNumberComponent } from './home/home.component';
 import { YesNoQuestionComponent } from './common/yes-no-question/yes-no-question.component';
 import { InputAreaComponent } from './common/input-area/input-area.component';
 import { DialogService } from './common/dialog';
@@ -42,7 +42,8 @@ import { UploadImageComponent } from './bottles/upload-image.component';
     BottlesComponent,
     BottleInfoComponent,
     ImportExcelComponent,
-    UploadImageComponent
+    UploadImageComponent,
+    RunningNumberComponent
   ],
   imports: [
     BrowserModule,

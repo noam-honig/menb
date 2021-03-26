@@ -1,9 +1,9 @@
 <div style="height:100%;display:flex;flex-direction: column;">
   <mat-toolbar color="primary" style="flex-shrink: 0;">
-    <button mat-button class="sidenav-toggle" (click)="sidenav.toggle()">
+    <button mat-button class="sidenav-toggle" (click)="sidenav.toggle()" *ngIf="context.isSignedIn()">
       <mat-icon>menu</mat-icon>
     </button>
-    <span class="toolbar-title">{{currentTitle()}}</span>
+    <span class="toolbar-title" *ngIf="context.isSignedIn()">{{currentTitle()}}</span>
     <ng-container *ngIf="!context.isSignedIn()">
       <button mat-flat-button color="primary" (click)="signIn()">כניסה</button>
       <button mat-flat-button color="primary" (click)="signUp()">הרשמה</button>
@@ -18,7 +18,7 @@
     </ng-container>
   </mat-toolbar>
   <mat-sidenav-container class="app-sidenav-container">
-    <mat-sidenav #sidenav class="app-sidenav mat-elevation-z10 no-print" [opened]="!dialogService.isScreenSmall()"
+    <mat-sidenav #sidenav class="app-sidenav mat-elevation-z10 no-print" [opened]="!dialogService.isScreenSmall()" *ngIf="context.isSignedIn()"
       [mode]="dialogService.isScreenSmall()?'over':'side'">
       <div style="width:100%;text-align: center">
 
@@ -38,7 +38,7 @@
   <div class="app-sidenav-content ">
 
 
-      <div class="wrapper"  style="height:100%">
+      <div [class.wrapper]="!isHome()"  style="height:100%">
           <router-outlet></router-outlet>
       </div>
 

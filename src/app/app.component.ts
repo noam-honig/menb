@@ -32,7 +32,7 @@ export class AppComponent {
   }
 
   async signIn() {
-    let user = new StringColumn("User Name");
+    let user = new StringColumn("שם");
     let password = new PasswordColumn();
     this.context.openDialog(InputAreaComponent, i => i.args = {
       title: "כניסה",
@@ -145,6 +145,11 @@ export class AppComponent {
           return this.activeRoute.firstChild.routeConfig.path;
       }
     return 'הבקבוקים של מנחם';
+  }
+  isHome() {
+    if (this.activeRoute &&  this.activeRoute.firstChild && this.activeRoute.firstChild.routeConfig.path == 'Home')
+      return true;
+    return false;
   }
 
   shouldDisplayRoute(route: Route) {

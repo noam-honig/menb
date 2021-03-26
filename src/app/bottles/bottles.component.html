@@ -21,7 +21,7 @@
   align-items: center;">
     <data-control [column]="searchString" style="    flex-grow: 1;
     margin-left: 10px;"></data-control>
-    <div>{{bottles.totalRows}} בקבוקים</div>
+    <div><app-number [value]="bottles.totalRows"></app-number>  בקבוקים</div>
   </div>
   <data-grid [settings]="bottles" class="grow-item"></data-grid>
 
