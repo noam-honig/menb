@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, isDevMode, OnInit } from '@angular/core';
 import { Context, StringColumn } from '@remult/core';
 import { Bottles } from './bottles';
 import { BottleInfoComponent } from '../bottle-info/bottle-info.component';
@@ -32,7 +32,7 @@ export class BottlesComponent implements OnInit {
     allowCRUD: true,
     allowDelete: false,
     showFilter: true,
-    
+
     gridButtons: [{
       name: 'קליטה מאקסל',
       click: async () => {
@@ -73,9 +73,9 @@ export class BottlesComponent implements OnInit {
     {
       textInMenu: 'מחק',
       icon: 'delete',
-      
+
       click: async (b) => {
-        if (await this.dialog.confirmDelete("בקבוק " + b.name.value)){
+        if (await this.dialog.confirmDelete("בקבוק " + b.name.value)) {
           await b.delete();
         }
       }
@@ -86,11 +86,12 @@ export class BottlesComponent implements OnInit {
   ngOnInit() {
     this.prepareChart();
     this.columnSaver.load('bottles');
-    setTimeout(() => {
-      this.context.openDialog(BottleInfoComponent, c => c.args = {
-        bottle: this.bottles.items[0]
-      }) 
-    }, 500);
+    if (isDevMode())
+      setTimeout(() => {
+        this.context.openDialog(BottleInfoComponent, c => c.args = {
+          bottle: this.bottles.items[0]
+        })
+      }, 500);
   }
 
   async prepareChart() {
