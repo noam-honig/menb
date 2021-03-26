@@ -1,16 +1,17 @@
-import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn } from '@remult/core';
+import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn } from '@remult/core';
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
 
 @EntityClass
 export class Bottles extends IdEntity {
+  
+    name = new StringColumn("שם");
+    manufacturer = new StringColumn("יצרן");
     country = new StringColumn({
         dataControlSettings: () => ({
             valueList: this.context.for(Countries).getValueList()
         }),
         caption: "מדינה",
     });
-    name = new StringColumn("שם");
-    manufacturer = new StringColumn("יצרן");
     comments = new StringColumn("הערות");
     bottleType = new StringColumn({
         dataControlSettings: () => ({
@@ -67,6 +68,18 @@ export class Bottles extends IdEntity {
                 if (this.isNew())
                     this.createDate.value = new Date();
             }
+        });
+    }
+}
+
+@EntityClass
+export class BottleImages extends IdEntity {
+    bottleId = new IdColumn();
+    image = new StringColumn();
+    constructor() {
+        super({
+            name: 'bottleImages',
+            allowApiCRUD: true
         });
     }
 }

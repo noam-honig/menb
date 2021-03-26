@@ -29,6 +29,7 @@ import { BottlesComponent } from './bottles/bottles.component';
 import { BottleInfoComponent } from './bottle-info/bottle-info.component';
 import { ChartsModule } from 'ng2-charts';
 import { ImportExcelComponent } from './bottles/import-excel.component';
+import { UploadImageComponent } from './bottles/upload-image.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { ImportExcelComponent } from './bottles/import-excel.component';
     ManageComponent,
     BottlesComponent,
     BottleInfoComponent,
-    ImportExcelComponent
+    ImportExcelComponent,
+    UploadImageComponent
   ],
   imports: [
     BrowserModule,
@@ -66,6 +68,6 @@ import { ImportExcelComponent } from './bottles/import-excel.component';
   providers: [DialogService, AdminGuard],
   bootstrap: [AppComponent],
   entryComponents: [YesNoQuestionComponent, InputAreaComponent, BottleInfoComponent,
-  ImportExcelComponent]
+    ImportExcelComponent, UploadImageComponent]
 })
 export class AppModule { }

@@ -8,6 +8,7 @@ import { MatPseudoCheckbox } from '@angular/material/core';
 import { ImportExcelComponent } from './import-excel.component';
 import { DialogService } from '../common/dialog';
 import { columnOrderAndWidthSaver } from '../common/columnOrderAndWidthSaver';
+import { UploadImageComponent } from './upload-image.component';
 
 @Component({
   selector: 'app-bottles',
@@ -17,10 +18,11 @@ import { columnOrderAndWidthSaver } from '../common/columnOrderAndWidthSaver';
 export class BottlesComponent implements OnInit {
 
   constructor(private context: Context, private dialog: DialogService) { }
-  
+
   bottles = this.context.for(Bottles).gridSettings({
     knowTotalRows: true,
     allowCRUD: true,
+    allowDelete: false,
     showFilter: true,
     confirmDelete: async b => await this.dialog.confirmDelete("בקבוק " + b.name.value),
     gridButtons: [{
@@ -30,12 +32,28 @@ export class BottlesComponent implements OnInit {
         this.bottles.reloadData();
       }
     }],
+    columnSettings: (b) => [
+      ...b.columns.toArray().filter(x => x != b.id)
+    ],
+    numOfColumnsInGrid:3,
     rowButtons: [{
-      name: 'פרטים',
+      textInMenu: 'פרטים',
       icon: 'edit',
+      showInLine: true,
+
       click: (bottle) => {
         this.context.openDialog(BottleInfoComponent, c => c.args = {
           bottle: bottle
+        })
+      }
+    }, {
+      textInMenu: 'צילום',
+      icon: 'photo_camera',
+      showInLine: true,
+      click: async (b) => {
+        this.context.openDialog(UploadImageComponent, x => x.args = {
+          bottleId: b.id.value,
+          afterUpload: () => { }
         })
       }
     }]

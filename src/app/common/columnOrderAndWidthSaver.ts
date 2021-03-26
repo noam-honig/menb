@@ -15,7 +15,7 @@ export class columnOrderAndWidthSaver {
         return {};
     }
     load(key: string) {
-        return;
+        
         let items: storedColumn[] = this.getStorage()[key];
         if (items) {
             let cols = items.map(x => {

@@ -1,7 +1,9 @@
 <div mat-dialog-content>
 
     <data-area [settings]="area"></data-area>
+    <img *ngIf="image" [src]="image.image.value">
 </div>
 <div mat-dialog-actions>
     <button mat-raised-button (click)="save()">שמור</button>
+    <button mat-raised-button (click)="upload()">תמונה</button>
 </div>

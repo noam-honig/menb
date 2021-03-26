@@ -35,7 +35,7 @@ export class AppComponent {
     let user = new StringColumn("User Name");
     let password = new PasswordColumn();
     this.context.openDialog(InputAreaComponent, i => i.args = {
-      title: "Sign In",
+      title: "כניסה",
       columnSettings: () => [
         user,
         password
@@ -74,9 +74,9 @@ export class AppComponent {
   signUp() {
     let user = this.context.for(Users).create();
     let password = new PasswordColumn();
-    let confirmPassword = new PasswordColumn({ caption: "Confirm Password" });
+    let confirmPassword = new PasswordColumn({ caption: "אישור סיסמה" });
     this.context.openDialog(InputAreaComponent, i => i.args = {
-      title: "Sign Up",
+      title: "הרשמה",
       columnSettings: () => [
         user.name,
         password,
@@ -84,7 +84,7 @@ export class AppComponent {
       ],
       ok: async () => {
         if (password.value != confirmPassword.value) {
-          confirmPassword.validationError = "doesn't match password";
+          confirmPassword.validationError = "לא תואם את הסיסמה";
           throw new Error(confirmPassword.defs.caption + " " + confirmPassword.validationError);
         }
         await user.create(password.value);
@@ -97,7 +97,7 @@ export class AppComponent {
   async updateInfo() {
     let user = await this.context.for(Users).findId(this.context.user.id);
     this.context.openDialog(InputAreaComponent, i => i.args = {
-      title: "Update Info",
+      title: "עדכון פרטים",
       columnSettings: () => [
         user.name
       ],
@@ -109,16 +109,16 @@ export class AppComponent {
   async changePassword() {
     let user = await this.context.for(Users).findId(this.context.user.id);
     let password = new PasswordColumn();
-    let confirmPassword = new PasswordColumn({ caption: "Confirm Password" });
+    let confirmPassword = new PasswordColumn({ caption: "אישור סיסמה" });
     this.context.openDialog(InputAreaComponent, i => i.args = {
-      title: "Change Password",
+      title: "שנה סיסמה",
       columnSettings: () => [
         password,
         confirmPassword
       ],
       ok: async () => {
         if (password.value != confirmPassword.value) {
-          confirmPassword.validationError = "doesn't match password";
+          confirmPassword.validationError = "לא תואם את הסיסמה";
           throw new Error(confirmPassword.defs.caption + " " + confirmPassword.validationError);
         }
         await user.updatePassword(password.value);
@@ -144,7 +144,7 @@ export class AppComponent {
         if (this.activeRoute.firstChild.routeConfig)
           return this.activeRoute.firstChild.routeConfig.path;
       }
-    return 'men-collection';
+    return 'הבקבוקים של מנחם';
   }
 
   shouldDisplayRoute(route: Route) {

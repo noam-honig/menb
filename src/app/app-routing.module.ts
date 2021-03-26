@@ -1,4 +1,4 @@
-import {  RemultModule, NotSignedInGuard, SignedInGuard } from '@remult/angular';
+import { RemultModule, NotSignedInGuard, SignedInGuard } from '@remult/angular';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
@@ -13,8 +13,8 @@ import { BottlesComponent } from './bottles/bottles.component';
 
 const routes: Routes = [
   { path: 'Home', component: HomeComponent },
-  { path: 'בקבוקים', component: BottlesComponent },
-  { path: 'הגדרות', component: ManageComponent },
+  { path: 'בקבוקים', component: BottlesComponent, canActivate: [AdminGuard] },
+  { path: 'הגדרות', component: ManageComponent, canActivate: [AdminGuard] },
   { path: 'User Accounts', component: UsersComponent, canActivate: [AdminGuard] },
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: '**', redirectTo: '/Home', pathMatch: 'full' }
