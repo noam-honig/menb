@@ -90,7 +90,7 @@ export class BottlesComponent implements OnInit {
   ngOnInit() {
     this.prepareChart();
     this.columnSaver.load('bottles');
-    if (isDevMode())
+    if (false)
       setTimeout(() => {
         this.context.openDialog(BottleInfoComponent, c => c.args = {
           bottle: this.bottles.items[0]
