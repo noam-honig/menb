@@ -1,6 +1,6 @@
 import { Component, isDevMode, OnInit } from '@angular/core';
 import { Context, StringColumn } from '@remult/core';
-import { Bottles } from './bottles';
+import { Bottles, LookupColumn } from './bottles';
 import { BottleInfoComponent } from '../bottle-info/bottle-info.component';
 import { ChartType, ChartOptions } from 'chart.js';
 import { Countries } from '../manage/countries';
@@ -10,6 +10,7 @@ import { DialogService } from '../common/dialog';
 import { columnOrderAndWidthSaver } from '../common/columnOrderAndWidthSaver';
 import { UploadImageComponent } from './upload-image.component';
 import { BusyService } from '@remult/angular';
+import * as xlsx from 'xlsx';
 
 @Component({
   selector: 'app-bottles',
@@ -39,6 +40,26 @@ export class BottlesComponent implements OnInit {
         await this.context.openDialog(ImportExcelComponent);
         this.bottles.reloadData();
       }
+    },
+    {
+      name: 'יצוא לאקסל',
+      click: async () => {
+        let result = [];
+
+        for await (const p of this.context.for(Bottles).iterate(this.bottles.getFilterWithSelectedRows())) {
+          let item = {};
+          for (const col of p.columns) {
+            item[col.defs.caption] = col.value;
+            if (col instanceof LookupColumn)
+              item[col.defs.caption]= await col.getNameAsync()
+          }
+          result.push(item);
+        }
+        let wb = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet(result));
+        xlsx.writeFile(wb, "bottles.xlsx");
+      }
+
     }],
     where: p =>
       // if there is a search value, search by it
@@ -78,7 +99,7 @@ export class BottlesComponent implements OnInit {
   })
   columnSaver = new columnOrderAndWidthSaver(this.bottles);
 
-   uploadImage(b: Bottles) {
+  uploadImage(b: Bottles) {
     this.context.openDialog(UploadImageComponent, x => x.args = {
       bottleId: b.id.value,
       afterUpload: async (image) => {
@@ -89,7 +110,7 @@ export class BottlesComponent implements OnInit {
     });
   }
 
-   edit(bottle: Bottles) {
+  edit(bottle: Bottles) {
     this.context.openDialog(BottleInfoComponent, c => c.args = {
       bottle: bottle
     });

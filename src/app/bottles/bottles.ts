@@ -15,50 +15,19 @@ export class Bottles extends IdEntity {
 
     name = new StringColumn("שם");
     manufacturer = new StringColumn("יצרן");
-    country = new StringColumn({
-        dataControlSettings: () => ({
-            valueList: this.context.for(Countries).getValueList()
-        }),
-        caption: "מדינה",
-    });
-    getCountry() {
-        return this.context.for(Countries).lookup(this.country);
-    }
+    country = new LookupColumn(this.context, Countries, "מדינה");
+
     comments = new StringColumn("הערות");
-    bottleType = new StringColumn({
-        dataControlSettings: () => ({
-            valueList: this.context.for(BottleTypes).getValueList()
-        }),
-        caption: "סוג בקבוק"
-    });
-    shape = new StringColumn({
-        dataControlSettings: () => ({
-            valueList: this.context.for(Shapes).getValueList()
-        }),
-        caption: "צורה"
-    });
+    bottleType = new LookupColumn(this.context, BottleTypes, "סוג בקבוק");
+
+    shape = new LookupColumn(this.context, Shapes, "צורה");
+
     shapeComments = new StringColumn("הערות לצורה");
-    type = new StringColumn({
-        dataControlSettings: () => ({
-            valueList: this.context.for(Types).getValueList()
-        }),
-        caption: "סוג"
-    });
+    type = new LookupColumn(this.context, Types, "סוג");
     subType = new StringColumn("תת סוג");
     quantity = new NumberColumn("כמות");
-    state = new StringColumn({
-        dataControlSettings: () => ({
-            valueList: this.context.for(States).getValueList()
-        }),
-        caption: "מצב"
-    });
-    location = new StringColumn({
-
-        dataControlSettings: () => ({
-            valueList: this.context.for(Locations).getValueList()
-        }),
-        caption: "נמצא ב"
-    });
+    state = new LookupColumn(this.context, States, "מצב");
+    location = new LookupColumn(this.context, Locations, "נמצא ב");
     alcohol = new NumberColumn({ caption: "אחוז אלכוהול", decimalDigits: 2 });
     volume = new NumberColumn("נפח");
 
@@ -95,4 +64,26 @@ export class BottleImages extends IdEntity {
             allowApiCRUD: Roles.admin
         });
     }
+}
+export class LookupColumn extends StringColumn {
+    constructor(private context: Context, private entityType: {
+        new(...args: any[]): lookupEntity;
+    }, caption: string) {
+        super({
+            caption,
+            dataControlSettings: () => ({
+                valueList: this.context.for(Countries).getValueList()
+            })
+        })
+    }
+    get displayValue() {
+        return this.context.for(this.entityType).lookup(this).name.value;
+    }
+    async getNameAsync() {
+        return (await this.context.for(this.entityType).lookupAsync(this)).name.value;
+    }
+
+}
+interface lookupEntity extends IdEntity {
+    name: StringColumn;
 }
