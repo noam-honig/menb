@@ -72,7 +72,7 @@ export class LookupColumn extends StringColumn {
         super({
             caption,
             dataControlSettings: () => ({
-                valueList: this.context.for(Countries).getValueList()
+                valueList: this.context.for(entityType).getValueList()
             })
         })
     }
