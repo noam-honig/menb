@@ -14,6 +14,7 @@ import * as passwordHash from 'password-hash';
 import '../app.module';
 import { PasswordColumn } from '../users/users';
 import { versionUpdate } from './version';
+import { BottleImages } from '../bottles/bottles';
 
 config(); //loads the configuration from the .env file
 const pool = new Pool({
@@ -32,12 +33,28 @@ PasswordColumn.passwordHelper = {
 let app = express();
 app.use(compression());
 if (!process.env.DEV_MODE)
-    app.use(forceHttps); 
-initExpress(app, database, { 
+    app.use(forceHttps);
+let e = initExpress(app, database, {
     tokenProvider: {
         createToken: userInfo => jwt.sign(userInfo, process.env.TOKEN_SIGN_KEY),
         verifyToken: token => jwt.verify(token, process.env.TOKEN_SIGN_KEY)
     }
+});
+app.get('/api/images/:id', async (req, res) => {
+    let context = await e.getValidContext(req);
+    let i = await context.for(BottleImages).findFirst(b => b.bottleId.isEqualTo(req.params.id));
+    if (!i) {
+        res.sendStatus(404);
+        return;
+    }
+    let split = i.image.value.split(',');
+    let type = split[0].substring(5).replace(';base64', '');
+
+    res.contentType(type);
+
+    res.send(Buffer.from(split[1], 'base64'));
+    //
+
 });
 app.use(express.static('dist/men-collection'));
 app.use('/*', async (req, res) => {

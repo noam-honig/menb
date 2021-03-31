@@ -5,8 +5,8 @@ import { Roles } from '../users/roles';
 @EntityClass
 export class Bottles extends IdEntity {
     async findImage() {
-        let r = await this.context.for(BottleImages).findFirst(x=>x.bottleId.isEqualTo(this.id));
-        if (!r){
+        let r = await this.context.for(BottleImages).findFirst(x => x.bottleId.isEqualTo(this.id));
+        if (!r) {
             r = this.context.for(BottleImages).create();
             r.bottleId.value = this.id.value;
         }
@@ -21,6 +21,9 @@ export class Bottles extends IdEntity {
         }),
         caption: "מדינה",
     });
+    getCountry() {
+        return this.context.for(Countries).lookup(this.country);
+    }
     comments = new StringColumn("הערות");
     bottleType = new StringColumn({
         dataControlSettings: () => ({

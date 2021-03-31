@@ -55,23 +55,14 @@ export class BottlesComponent implements OnInit {
       showInLine: true,
 
       click: (bottle) => {
-        this.context.openDialog(BottleInfoComponent, c => c.args = {
-          bottle: bottle
-        })
+        this.edit(bottle);
       }
     }, {
       textInMenu: 'צילום',
       icon: 'photo_camera',
       showInLine: true,
       click: async (b) => {
-        this.context.openDialog(UploadImageComponent, x => x.args = {
-          bottleId: b.id.value,
-          afterUpload: async (image) => {
-            let i = await b.findImage();
-            i.image.value = image;
-            await i.save();
-          }
-        })
+        this.uploadImage(b);
       }
     },
     {
@@ -86,6 +77,23 @@ export class BottlesComponent implements OnInit {
     }]
   })
   columnSaver = new columnOrderAndWidthSaver(this.bottles);
+
+   uploadImage(b: Bottles) {
+    this.context.openDialog(UploadImageComponent, x => x.args = {
+      bottleId: b.id.value,
+      afterUpload: async (image) => {
+        let i = await b.findImage();
+        i.image.value = image;
+        await i.save();
+      }
+    });
+  }
+
+   edit(bottle: Bottles) {
+    this.context.openDialog(BottleInfoComponent, c => c.args = {
+      bottle: bottle
+    });
+  }
 
   ngOnInit() {
     this.prepareChart();
