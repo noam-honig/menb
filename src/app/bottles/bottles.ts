@@ -45,6 +45,7 @@ export class Bottles extends IdEntity {
             name: "Bottles",
             caption: "בקבוקים",
             allowApiCRUD: Roles.admin,
+            allowApiRead: context => context.isSignedIn(),
             defaultOrderBy: () => this.name,
             saving: () => {
                 if (this.isNew())
@@ -61,7 +62,8 @@ export class BottleImages extends IdEntity {
     constructor() {
         super({
             name: 'bottleImages',
-            allowApiCRUD: Roles.admin
+            allowApiCRUD: Roles.admin,
+            allowApiRead: context => context.isSignedIn()
         });
     }
 }

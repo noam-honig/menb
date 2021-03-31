@@ -13,7 +13,7 @@ import { BottlesComponent } from './bottles/bottles.component';
 
 const routes: Routes = [
   { path: 'Home', component: HomeComponent },
-  { path: 'בקבוקים', component: BottlesComponent, canActivate: [AdminGuard] },
+  { path: 'בקבוקים', component: BottlesComponent, canActivate: [SignedInGuard] },
   { path: 'הגדרות', component: ManageComponent, canActivate: [AdminGuard] },
   { path: 'משתמשים', component: UsersComponent, canActivate: [AdminGuard] },
   { path: '', redirectTo: '/Home', pathMatch: 'full' },

@@ -9,7 +9,8 @@ export class Countries extends IdEntity {
             name: "Countries",
             caption: "מדינות",
             defaultOrderBy: () => this.name,
-            allowApiCRUD: Roles.admin
+            allowApiCRUD: Roles.admin,
+            allowApiRead: context => context.isSignedIn()
         });
     }
 }
@@ -21,7 +22,8 @@ export class Types extends IdEntity {
             name: "Types",
             caption: "סוג",
             defaultOrderBy: () => this.name,
-            allowApiCRUD: Roles.admin
+            allowApiCRUD: Roles.admin,
+            allowApiRead: context => context.isSignedIn()
         });
     }
 }
@@ -33,7 +35,8 @@ export class BottleTypes extends IdEntity {
             name: "BottleType",
             caption: "סוג בקבוק",
             defaultOrderBy: () => this.name,
-            allowApiCRUD: Roles.admin
+            allowApiCRUD: Roles.admin,
+            allowApiRead: context => context.isSignedIn()
         });
     }
 }
@@ -45,7 +48,8 @@ export class Shapes extends IdEntity {
             name: "Shape",
             defaultOrderBy: () => this.name,
             caption: "צורה",
-            allowApiCRUD: Roles.admin
+            allowApiCRUD: Roles.admin,
+            allowApiRead: context => context.isSignedIn()
         });
     }
 }
@@ -57,7 +61,8 @@ export class States extends IdEntity {
             name: "State",
             defaultOrderBy: () => this.name,
             caption: "מצב",
-            allowApiCRUD: Roles.admin
+            allowApiCRUD: Roles.admin,
+            allowApiRead: context => context.isSignedIn()
         });
     }
 }
@@ -69,7 +74,8 @@ export class Locations extends IdEntity {
             name: "Locations",
             defaultOrderBy: () => this.name,
             caption: "נמצא ב",
-            allowApiCRUD: Roles.admin
+            allowApiCRUD: Roles.admin,
+            allowApiRead: context => context.isSignedIn()
         });
     }
 }
