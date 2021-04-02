@@ -165,6 +165,16 @@ export class SqlBuilder {
         where: query.where
       }), ") ", mappedColumn);
     }
+    existsInnerSelect(query: FromAndWhere, mappedColumn: any) {
+      return this.build("(", this.query({
+        select: () => [this.build("count(*)>0")],
+        from: query.from,
+        innerJoin: query.innerJoin,
+        outerJoin: query.outerJoin,
+        crossJoin: query.crossJoin,
+        where: query.where
+      }), ") ", mappedColumn);
+    }
     countDistinctInnerSelect(col: Column, query: FromAndWhere, mappedColumn: any) {
       return this.build("(", this.query({
         select: () => [this.build("count(distinct ", col, ")")],

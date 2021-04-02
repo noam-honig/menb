@@ -1,4 +1,5 @@
-import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn } from '@remult/core';
+import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn, BoolColumn } from '@remult/core';
+import { SqlBuilder } from '../common/sql-builder';
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
 import { Roles } from '../users/roles';
 
@@ -38,6 +39,20 @@ export class Bottles extends IdEntity {
     exitReason = new StringColumn("סיבה להוצאה מאוסף");
     worth = new NumberColumn({ caption: "שווי", decimalDigits: 2 });
     createDate = new DateTimeColumn({ allowApiUpdate: false });
+    hasImage = new BoolColumn({
+        caption: 'תמונה',
+        dataControlSettings: () => ({
+            width: '60',
+            getValue: () => '',
+            readOnly: true
+        }),
+        sqlExpression: () => {
+            var bi = this.context.for(BottleImages).create();
+            var sql = new SqlBuilder();
+            sql.addEntity(this, "Bottles");
+            return '(' + sql.query({ select: () => ["count(*)>0 hasImage"], from: bi, where: () => [sql.eq(bi.bottleId, this.id)] }) + ')';
+        }
+    })
 
 
     constructor(private context: Context) {
