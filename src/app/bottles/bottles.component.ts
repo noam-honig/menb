@@ -11,6 +11,7 @@ import { columnOrderAndWidthSaver } from '../common/columnOrderAndWidthSaver';
 import { UploadImageComponent } from './upload-image.component';
 import { BusyService } from '@remult/angular';
 import * as xlsx from 'xlsx';
+import { async } from '@angular/core/testing';
 
 @Component({
   selector: 'app-bottles',
@@ -51,7 +52,7 @@ export class BottlesComponent implements OnInit {
           for (const col of p.columns) {
             item[col.defs.caption] = col.value;
             if (col instanceof LookupColumn)
-              item[col.defs.caption]= await col.getNameAsync()
+              item[col.defs.caption] = await col.getNameAsync()
           }
           result.push(item);
         }
@@ -84,6 +85,18 @@ export class BottlesComponent implements OnInit {
       showInLine: true,
       click: async (b) => {
         this.uploadImage(b);
+      }
+    },
+    {
+      textInMenu: 'שכפל',
+      click: async (b) => {
+        this.bottles.addNewRow();
+        let newb = this.bottles.currentRow;
+        for (const col of b.columns) {
+          newb.columns.find(col).value = col.value;
+        }
+        this.edit(newb);
+
       }
     },
     {

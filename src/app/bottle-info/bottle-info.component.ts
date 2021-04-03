@@ -56,15 +56,22 @@ export class BottleInfoComponent implements OnInit {
 
       ]
     });
-    this.args.bottle.findImage().then(i => this.image = i);
+    if (!this.args.bottle.isNew()) {
+      this.args.bottle.reload();
+      this.args.bottle.findImage().then(i => this.image = i);
+    } else {
+      this.image = this.context.for(BottleImages).create();
+    }
   }
 
   async save() {
     await this.args.bottle.save();
+
     if (this.image.image.value != this.image.image.originalValue) {
       this.image.bottleId.value = this.args.bottle.id.value;
       await this.image.save();
     }
+
     this.dialog.close();
   }
   close() {
