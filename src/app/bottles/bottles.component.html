@@ -10,41 +10,46 @@
       <app-number [value]="bottles.totalRows"></app-number> בקבוקים
     </div>
   </div>
-  <mat-tab-group class="grow-item">
+  <mat-tab-group class="grow-item tab">
+
     <mat-tab label="טבלא">
       <data-grid [settings]="bottles" class="grow-item"></data-grid>
     </mat-tab>
     <mat-tab label="כרטיסים">
-      <div style="display:flex">
-        <mat-card *ngFor="let b of bottles.items" style="min-width: 300px;margin:10px">
-          <mat-card-header>
-            <div mat-card-avatar class="example-header-image">
-              <button mat-mini-fab color="primary" aria-label="ערוך" (click)="edit(b)">
-                <mat-icon>edit</mat-icon>
+      <div class="full-page" style="flex-direction: row;">
+        <mat-card *ngFor="let b of bottles.items" style="min-width: 300px;margin:10px;">
+          <div class="full-page">
+            <mat-card-header>
+              <div mat-card-avatar class="example-header-image">
+                <button mat-mini-fab color="none" aria-label="ערוך" (click)="edit(b)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+              <mat-card-title>{{b.name.value}}</mat-card-title>
+              <mat-card-subtitle>{{b.country.displayValue}}</mat-card-subtitle>
+            </mat-card-header>
+
+            <div class="grow-item">
+              <div class="full-page">
+                <div class="grow-item">
+                  <img mat-card-image src="/api/images/{{b.id.value}}" alt="" style="max-height: 100%;max-width: 100%;">
+                </div>
+
+                <p>
+                  {{b.comments.value}}
+                </p>
+              </div>
+            </div>
+            <div>
+              <button mat-mini-fab color="primary" aria-label="העלה תמונה" (click)="uploadImage(b)">
+                <mat-icon>photo_camera</mat-icon>
               </button>
             </div>
-            <mat-card-title>{{b.name.value}}</mat-card-title>
-            <mat-card-subtitle>{{b.country.displayValue}}</mat-card-subtitle>
-          </mat-card-header>
-
-          <mat-card-content>
-            <div>
-              <img mat-card-image src="/api/images/{{b.id.value}}" alt="">
-            </div>
-            <button mat-mini-fab color="primary" aria-label="העלה תמונה" (click)="uploadImage(b)">
-              <mat-icon>photo_camera</mat-icon>
-            </button>
-            <p>
-              {{b.comments.value}}
-            </p>
-          </mat-card-content>
-          <mat-card-actions>
-
-
-          </mat-card-actions>
+          </div>
         </mat-card>
       </div>
     </mat-tab>
+
 
   </mat-tab-group>
 

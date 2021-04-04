@@ -1,4 +1,5 @@
 import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn, BoolColumn } from '@remult/core';
+import { SelectValueDialogComponent } from '@remult/angular';
 import { SqlBuilder } from '../common/sql-builder';
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
 import { Roles } from '../users/roles';
@@ -89,7 +90,12 @@ export class LookupColumn extends StringColumn {
         super({
             caption,
             dataControlSettings: () => ({
-                valueList: this.context.for(entityType).getValueList()
+                getValue: () => this.displayValue,
+                hideDataOnInput: true,
+                click: async () => context.openDialog(SelectValueDialogComponent, async x => x.args({
+                    values: await this.context.for(entityType).getValueList(),
+                    onSelect: (x) => this.value = x.id
+                }))
             })
         })
     }
