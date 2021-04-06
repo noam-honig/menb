@@ -1,4 +1,4 @@
-import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn, BoolColumn } from '@remult/core';
+import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn, BoolColumn, Entity, SpecificEntityHelper, ColumnSettings } from '@remult/core';
 import { SelectValueDialogComponent } from '@remult/angular';
 import { SqlBuilder } from '../common/sql-builder';
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
@@ -17,7 +17,8 @@ export class Bottles extends IdEntity {
 
     name = new StringColumn("שם");
     manufacturer = new StringColumn("יצרן");
-    country = new LookupColumn(this.context, Countries, "מדינה");
+    country = new LookupColumn1(this.context.for(Countries),{caption: "מדינה"});
+
 
     comments = new StringColumn("הערות");
     bottleType = new LookupColumn(this.context, BottleTypes, "סוג בקבוק");
@@ -110,3 +111,35 @@ export class LookupColumn extends StringColumn {
 interface lookupEntity extends IdEntity {
     name: StringColumn;
 }
+
+export class LookupColumn1<T extends Entity<string>> extends StringColumn {
+    constructor(private provider: SpecificEntityHelper<string, T>, private settings?: {
+      lookupDisplayValue?: (entity: T) => string
+    } & ColumnSettings<string>) {
+      super(settings);
+      if (!this.settings) {
+        this.settings = {};
+      }
+      if (!this.settings.lookupDisplayValue) {
+        this.settings.lookupDisplayValue = x => {
+          for (const col of x.columns) {
+            if (col instanceof StringColumn && col != x.columns.idColumn)
+              return col.displayValue;
+          }
+        };
+      }
+    }
+  
+    get lookup(): T {
+      return this.provider.lookup(this);
+    }
+    async lookupAsync(): Promise<T> {
+      return this.provider.lookupAsync(this);
+    }
+    get displayValue(): string {
+      return this.settings.lookupDisplayValue(this.lookup);
+    }
+    async displayValueAsync(): Promise<string> {
+      return this.settings.lookupDisplayValue(await this.lookupAsync());
+    }
+  }
