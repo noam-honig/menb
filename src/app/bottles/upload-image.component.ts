@@ -19,7 +19,7 @@ export class UploadImageComponent implements OnInit {
         private matDialog: MatDialogRef<any>) { }
     args: {
         bottleId: string,
-        afterUpload: (image: string) => void
+        afterUpload: (image: string, fileName: string) => void
     }
 
     async onFileInput(eventArgs: any) {
@@ -35,38 +35,41 @@ export class UploadImageComponent implements OnInit {
                     var img = new Image();
 
                     var canvas = document.createElement("canvas");
+                    if (false) {
+                        img.onload = async () => {
+                            var ctx = canvas.getContext("2d");
+                            ctx.drawImage(img, 0, 0);
 
-                    img.onload = async () => {
-                        var ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0);
+                            var MAX_WIDTH = 300;
+                            var MAX_HEIGHT = 500;
+                            var width = img.width;
+                            var height = img.height;
 
-                        var MAX_WIDTH = 300;
-                        var MAX_HEIGHT = 500;
-                        var width = img.width;
-                        var height = img.height;
-
-                        if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
+                            if (width > height) {
+                                if (width > MAX_WIDTH) {
+                                    height *= MAX_WIDTH / width;
+                                    width = MAX_WIDTH;
+                                }
+                            } else {
+                                if (height > MAX_HEIGHT) {
+                                    width *= MAX_HEIGHT / height;
+                                    height = MAX_HEIGHT;
+                                }
                             }
-                        } else {
-                            if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
-                            }
+                            canvas.width = width;
+                            canvas.height = height;
+                            var ctx = canvas.getContext("2d");
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            var dataurl = canvas.toDataURL("image/png");
+
+                            this.args.afterUpload(dataurl, f.name);
+                            this.matDialog.close();
                         }
-                        canvas.width = width;
-                        canvas.height = height;
-                        var ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        var dataurl = canvas.toDataURL("image/png");
-
-                        this.args.afterUpload(dataurl);
-                        this.matDialog.close();
+                        img.src = e.target.result.toString();
                     }
-                    img.src = e.target.result.toString();
+                    this.args.afterUpload(e.target.result.toString(), f.name);
+                    this.matDialog.close();
 
 
 

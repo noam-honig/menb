@@ -75,6 +75,7 @@ export class Bottles extends IdEntity {
 export class BottleImages extends IdEntity {
     bottleId = new IdColumn();
     image = new StringColumn();
+    fileName = new StringColumn();
     constructor() {
         super({
             name: 'bottleImages',

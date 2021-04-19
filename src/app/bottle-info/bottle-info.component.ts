@@ -3,7 +3,7 @@ import { BottleImages, Bottles } from '../bottles/bottles';
 import { Context } from '@remult/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UploadImageComponent } from '../bottles/upload-image.component';
-import { openDialog ,DataAreaSettings} from '@remult/angular';
+import { openDialog, DataAreaSettings } from '@remult/angular';
 
 @Component({
   selector: 'app-bottle-info',
@@ -85,7 +85,10 @@ export class BottleInfoComponent implements OnInit {
     await openDialog(UploadImageComponent, x => x.args = {
       bottleId: this.args.bottle.id.value
       ,
-      afterUpload: (image) => this.image.image.value = image
+      afterUpload: (image, fileName) => {
+        this.image.image.value = image;
+        this.image.fileName.value = fileName;
+      }
     });
   }
 

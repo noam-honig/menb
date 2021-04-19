@@ -119,7 +119,7 @@ export class BottlesComponent implements OnInit {
   uploadImage(b: Bottles) {
     openDialog(UploadImageComponent, x => x.args = {
       bottleId: b.id.value,
-      afterUpload: async (image) => {
+      afterUpload: async (image,fileName) => {
         let i = await b.findImage();
         i.image.value = image;
         await i.save();
