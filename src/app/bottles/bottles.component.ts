@@ -63,6 +63,9 @@ export class BottlesComponent implements OnInit {
       }
 
     }],
+    newRow:bottle=>{
+      this.edit(bottle);
+    },
     where: p =>
       // if there is a search value, search by it
       this.searchString.value ? p.name.contains(this.searchString)
