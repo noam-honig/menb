@@ -3,7 +3,7 @@ import { Roles } from '../users/roles';
 
 @EntityClass
 export class Countries extends IdEntity {
-    name = new StringColumn("שם מדינה");
+    name = new StringColumn({ caption: "שם מדינה"});
     constructor() {
         super({
             name: "Countries",
@@ -16,7 +16,7 @@ export class Countries extends IdEntity {
 }
 @EntityClass
 export class Types extends IdEntity {
-    name = new StringColumn("שם");
+    name = new StringColumn({ caption: "שם"});
     constructor() {
         super({
             name: "Types",
@@ -29,7 +29,7 @@ export class Types extends IdEntity {
 }
 @EntityClass
 export class BottleTypes extends IdEntity {
-    name = new StringColumn("שם");
+    name = new StringColumn({ caption: "שם"});
     constructor() {
         super({
             name: "BottleType",
@@ -42,7 +42,7 @@ export class BottleTypes extends IdEntity {
 }
 @EntityClass
 export class Shapes extends IdEntity {
-    name = new StringColumn("שם");
+    name = new StringColumn({ caption: "שם"});
     constructor() {
         super({
             name: "Shape",
@@ -55,7 +55,7 @@ export class Shapes extends IdEntity {
 }
 @EntityClass
 export class States extends IdEntity {
-    name = new StringColumn("שם");
+    name = new StringColumn({ caption: "שם"});
     constructor() {
         super({
             name: "State",
@@ -68,7 +68,7 @@ export class States extends IdEntity {
 }
 @EntityClass
 export class Locations extends IdEntity {
-    name = new StringColumn("שם");
+    name = new StringColumn({ caption: "שם"});
     constructor() {
         super({
             name: "Locations",

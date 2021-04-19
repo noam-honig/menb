@@ -1,4 +1,5 @@
-import { GridSettings, DataControlSettings, DataControlInfo, Column } from '@remult/core';
+import { DataControlInfo, DataControlSettings, GridSettings } from '@remult/angular';
+import {  Column } from '@remult/core';
 
 const storageEntryName = 'grid-state';
 export class columnOrderAndWidthSaver {

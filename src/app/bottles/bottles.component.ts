@@ -9,9 +9,10 @@ import { ImportExcelComponent } from './import-excel.component';
 import { DialogService } from '../common/dialog';
 import { columnOrderAndWidthSaver } from '../common/columnOrderAndWidthSaver';
 import { UploadImageComponent } from './upload-image.component';
-import { BusyService } from '@remult/angular';
+import { BusyService, openDialog } from '@remult/angular';
 import * as xlsx from 'xlsx';
-import { async } from '@angular/core/testing';
+
+import { GridSettings } from '@remult/angular';
 
 @Component({
   selector: 'app-bottles',
@@ -29,7 +30,7 @@ export class BottlesComponent implements OnInit {
     }
   })
 
-  bottles = this.context.for(Bottles).gridSettings({
+  bottles = new GridSettings(this.context.for(Bottles), {
     knowTotalRows: true,
     allowCRUD: true,
     allowDelete: false,
@@ -38,7 +39,7 @@ export class BottlesComponent implements OnInit {
     gridButtons: [{
       name: 'קליטה מאקסל',
       click: async () => {
-        await this.context.openDialog(ImportExcelComponent);
+        await openDialog(ImportExcelComponent);
         this.bottles.reloadData();
       }
     },
@@ -64,7 +65,7 @@ export class BottlesComponent implements OnInit {
     }],
     where: p =>
       // if there is a search value, search by it
-      this.searchString.value ? p.name.isContains(this.searchString)
+      this.searchString.value ? p.name.contains(this.searchString)
         : undefined
     ,
     columnSettings: (b) => [
@@ -113,7 +114,7 @@ export class BottlesComponent implements OnInit {
   columnSaver = new columnOrderAndWidthSaver(this.bottles);
 
   uploadImage(b: Bottles) {
-    this.context.openDialog(UploadImageComponent, x => x.args = {
+    openDialog(UploadImageComponent, x => x.args = {
       bottleId: b.id.value,
       afterUpload: async (image) => {
         let i = await b.findImage();
@@ -124,7 +125,7 @@ export class BottlesComponent implements OnInit {
   }
 
   edit(bottle: Bottles) {
-    this.context.openDialog(BottleInfoComponent, c => c.args = {
+    openDialog(BottleInfoComponent, c => c.args = {
       bottle: bottle
     });
   }
@@ -134,7 +135,7 @@ export class BottlesComponent implements OnInit {
     this.columnSaver.load('bottles');
     if (false)
       setTimeout(() => {
-        this.context.openDialog(BottleInfoComponent, c => c.args = {
+        openDialog(BottleInfoComponent, c => c.args = {
           bottle: this.bottles.items[0]
         })
       }, 500);

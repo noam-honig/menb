@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { GridSettings } from '@remult/angular';
 import { Context } from '@remult/core';
 import { Countries, Locations, States, Shapes, BottleTypes, Types } from './countries';
 
@@ -9,24 +10,24 @@ import { Countries, Locations, States, Shapes, BottleTypes, Types } from './coun
 })
 export class ManageComponent implements OnInit {
 
-  constructor(private context:Context) { }
-  countries = this.context.for(Countries).gridSettings({
-    allowCRUD:true
+  constructor(private context: Context) { }
+  countries = new GridSettings(this.context.for(Countries), {
+    allowCRUD: true
   });
-  types = this.context.for(Types).gridSettings({
-    allowCRUD:true
+  types = new GridSettings(this.context.for(Types), {
+    allowCRUD: true
   });
-  bottleType = this.context.for(BottleTypes).gridSettings({
-    allowCRUD:true
+  bottleType = new GridSettings(this.context.for(BottleTypes), {
+    allowCRUD: true
   });
-  shapes = this.context.for(Shapes).gridSettings({
-    allowCRUD:true
+  shapes = new GridSettings(this.context.for(Shapes), {
+    allowCRUD: true
   });
-  states = this.context.for(States).gridSettings({
-    allowCRUD:true
+  states = new GridSettings(this.context.for(States), {
+    allowCRUD: true
   });
-  locations = this.context.for(Locations).gridSettings({
-    allowCRUD:true
+  locations = new GridSettings(this.context.for(Locations), {
+    allowCRUD: true
   });
 
   ngOnInit() {

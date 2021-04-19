@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { BottleImages, Bottles } from '../bottles/bottles';
-import { Context, DataAreaSettings } from '@remult/core';
+import { Context } from '@remult/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UploadImageComponent } from '../bottles/upload-image.component';
+import { openDialog ,DataAreaSettings} from '@remult/angular';
 
 @Component({
   selector: 'app-bottle-info',
@@ -81,7 +82,7 @@ export class BottleInfoComponent implements OnInit {
   async upload() {
     if (this.args.bottle.isNew())
       await this.args.bottle.save();
-    await this.context.openDialog(UploadImageComponent, x => x.args = {
+    await openDialog(UploadImageComponent, x => x.args = {
       bottleId: this.args.bottle.id.value
       ,
       afterUpload: (image) => this.image.image.value = image

@@ -1,7 +1,7 @@
 //import { CustomModuleLoader } from '../../../../../../repos/radweb/src/app/server/CustomModuleLoader';
 //let moduleLoader = new CustomModuleLoader('/dist-server/repos/radweb/projects/');
 import * as express from 'express';
-import { initExpress } from '@remult/server';
+import { initExpress } from '@remult/core/server';
 import * as fs from 'fs';
 import { SqlDatabase } from '@remult/core';
 import { Pool } from 'pg';

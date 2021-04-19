@@ -1,9 +1,9 @@
 
-import { IdEntity, IdColumn, checkForDuplicateValue, StringColumn, BoolColumn, ColumnOptions, UserInfo, ColumnSettings, ServerFunction, ServerMethod } from "@remult/core";
+import { IdEntity, IdColumn, checkForDuplicateValue, StringColumn, BoolColumn,  UserInfo, ColumnSettings, ServerFunction, ServerMethod } from "@remult/core";
 import { changeDate } from '../shared/types';
 import { Context, EntityClass } from '@remult/core';
 import { Roles } from './roles';
-import { userInfo } from "os";
+
 
 @EntityClass
 export class Users extends IdEntity {
@@ -18,7 +18,7 @@ export class Users extends IdEntity {
     password = new PasswordColumn({
         includeInApi: false
     });
-    createDate = new changeDate('Create Date');
+    createDate = new changeDate({ caption: 'Create Date'});
 
     admin = new BoolColumn();
     constructor(private context: Context) {
@@ -62,33 +62,15 @@ export class Users extends IdEntity {
         await this.save();
     }
 }
-
-
-
-export class UserId extends IdColumn {
-
-    constructor(private context: Context, settingsOrCaption?: ColumnOptions<string>) {
-        super({
-            dataControlSettings: () => ({
-                getValue: () => this.displayValue,
-                hideDataOnInput: true,
-                width: '200'
-            })
-        }, settingsOrCaption);
-    }
-    get displayValue() {
-        return this.context.for(Users).lookup(this).name.value;
-    }
-}
 export class PasswordColumn extends StringColumn {
 
     constructor(settings?: ColumnSettings<string>) {
         super({
-            ...{ caption: 'סיסמה' },
-            ...settings,
-            dataControlSettings: () => ({
+            ...{
+                caption: 'סיסמה',
                 inputType: 'password'
-            })
+            },
+            ...settings
         })
     }
     static passwordHelper: {
