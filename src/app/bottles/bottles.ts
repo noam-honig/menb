@@ -1,4 +1,4 @@
-import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn, BoolColumn, Entity, SpecificEntityHelper, ColumnSettings } from '@remult/core';
+import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn, BoolColumn, Entity, SpecificEntityHelper, LookupColumn as RemultLookupColumn } from '@remult/core';
 import { extend, getValueList, openDialog, SelectValueDialogComponent } from '@remult/angular';
 import { SqlBuilder } from '../common/sql-builder';
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
@@ -15,30 +15,30 @@ export class Bottles extends IdEntity {
         return r;
     }
 
-    name = new StringColumn({ caption: "שם"});
-    manufacturer = new StringColumn({ caption: "יצרן"});
-    country = new LookupColumn1(this.context.for(Countries), { caption: "מדינה" });
+    name = new StringColumn({ caption: "שם" });
+    manufacturer = new StringColumn({ caption: "יצרן" });
+    country = new LookupColumn(this.context.for(Countries), "מדינה");
 
 
-    comments = new StringColumn({ caption: "הערות"});
-    bottleType = new LookupColumn(this.context, BottleTypes, "סוג בקבוק");
+    comments = new StringColumn({ caption: "הערות" });
+    bottleType = new LookupColumn(this.context.for(BottleTypes), "סוג בקבוק");
 
-    shape = new LookupColumn(this.context, Shapes, "צורה");
+    shape = new LookupColumn(this.context.for(Shapes), "צורה");
 
-    shapeComments = new StringColumn({ caption: "הערות לצורה"});
-    type = new LookupColumn(this.context, Types, "סוג");
-    subType = new StringColumn({ caption: "תת סוג"});
-    quantity = new NumberColumn({ caption: "כמות"});
-    state = new LookupColumn(this.context, States, "מצב");
-    location = new LookupColumn(this.context, Locations, "נמצא ב");
+    shapeComments = new StringColumn({ caption: "הערות לצורה" });
+    type = new LookupColumn(this.context.for(Types), "סוג");
+    subType = new StringColumn({ caption: "תת סוג" });
+    quantity = new NumberColumn({ caption: "כמות" });
+    state = new LookupColumn(this.context.for(States), "מצב");
+    location = new LookupColumn(this.context.for(Locations), "נמצא ב");
     alcohol = new NumberColumn({ caption: "אחוז אלכוהול", decimalDigits: 2 });
-    volume = new NumberColumn({ caption: "נפח"});
+    volume = new NumberColumn({ caption: "נפח" });
 
-    entryDate = new DateColumn({ caption: "תאריך כניסה לאוסף"});
-    origin = new StringColumn({ caption: "הגיע מ"});
+    entryDate = new DateColumn({ caption: "תאריך כניסה לאוסף" });
+    origin = new StringColumn({ caption: "הגיע מ" });
     cost = new NumberColumn({ decimalDigits: 2, caption: 'עלות' });
-    exitDate = new DateColumn({ caption: "תאריך הוצאה מהואסף"});
-    exitReason = new StringColumn({ caption: "סיבה להוצאה מאוסף"});
+    exitDate = new DateColumn({ caption: "תאריך הוצאה מהואסף" });
+    exitReason = new StringColumn({ caption: "סיבה להוצאה מאוסף" });
     worth = new NumberColumn({ caption: "שווי", decimalDigits: 2 });
     createDate = new DateTimeColumn({ allowApiUpdate: false });
     hasImage = extend(new BoolColumn({
@@ -84,60 +84,28 @@ export class BottleImages extends IdEntity {
         });
     }
 }
-export class LookupColumn extends StringColumn {
-    constructor(private context: Context, private entityType: {
-        new(...args: any[]): lookupEntity;
-    }, caption: string) {
-        super({caption});
+export class LookupColumn<T extends lookupEntity> extends RemultLookupColumn<T> {
+    constructor(provider: SpecificEntityHelper<string, T>, caption: string) {
+        super(provider, {
+            displayValue: () => this.item.name.value,
+            caption
+        });
         extend(this).dataControl(s => {
-            s.getValue = () => this.displayValue;
+            s.getValue = () =>  this.displayValue;
             s.hideDataOnInput = true;
-            s.click = async () => openDialog(SelectValueDialogComponent, async x => x.args({
-                values: await getValueList(this.context.for(entityType)),
-                onSelect: (x) => this.value = x.id
-            }))
+            s.click = async () => {
+                
+                openDialog(SelectValueDialogComponent, async x => x.args({
+                    values: await getValueList(provider),
+                    onSelect: (x) => this.value = x.id
+                }));
+            }
         });
     }
-    get displayValue() {
-        return this.context.for(this.entityType).lookup(this).name.value;
-    }
-    async getNameAsync() {
-        return (await this.context.for(this.entityType).lookupAsync(this)).name.value;
-    }
+
 
 }
 interface lookupEntity extends IdEntity {
     name: StringColumn;
 }
 
-export class LookupColumn1<T extends Entity<string>> extends StringColumn {
-    constructor(private provider: SpecificEntityHelper<string, T>, private settings?: {
-        lookupDisplayValue?: (entity: T) => string
-    } & ColumnSettings<string>) {
-        super(settings);
-        if (!this.settings) {
-            this.settings = {};
-        }
-        if (!this.settings.lookupDisplayValue) {
-            this.settings.lookupDisplayValue = x => {
-                for (const col of x.columns) {
-                    if (col instanceof StringColumn && col != x.columns.idColumn)
-                        return col.displayValue;
-                }
-            };
-        }
-    }
-
-    get lookup(): T {
-        return this.provider.lookup(this);
-    }
-    async lookupAsync(): Promise<T> {
-        return this.provider.lookupAsync(this);
-    }
-    get displayValue(): string {
-        return this.settings.lookupDisplayValue(this.lookup);
-    }
-    async displayValueAsync(): Promise<string> {
-        return this.settings.lookupDisplayValue(await this.lookupAsync());
-    }
-}

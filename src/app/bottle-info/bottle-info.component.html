@@ -6,7 +6,7 @@
             <div style="text-align: center;">
                 <data-area [settings]="leftArea"></data-area>
                 <div>
-                    <img *ngIf="image" [src]="image.image.value" style="max-width:100%">
+                    <img *ngIf="image" [src]="image.image.value" style="max-width:400px">
                 </div>
                 <button mat-mini-fab color="primary" aria-label="העלה תמונה" (click)="upload()">
                     <mat-icon>photo_camera</mat-icon>

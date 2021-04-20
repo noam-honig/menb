@@ -52,8 +52,10 @@ export class BottlesComponent implements OnInit {
           let item = {};
           for (const col of p.columns) {
             item[col.defs.caption] = col.value;
-            if (col instanceof LookupColumn)
-              item[col.defs.caption] = await col.getNameAsync()
+            if (col instanceof LookupColumn){
+              await col.waitLoad();
+              item[col.defs.caption] = col.displayValue;
+            }
           }
           result.push(item);
         }
