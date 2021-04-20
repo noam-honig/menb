@@ -55,7 +55,7 @@ export class Bottles extends IdEntity {
         s.readOnly = true;
     })
 
-
+    imageReloadVersion=0;
     constructor(private context: Context) {
         super({
             name: "Bottles",

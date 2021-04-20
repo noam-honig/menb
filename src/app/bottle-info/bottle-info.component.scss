@@ -1,8 +1,13 @@
 .two-columns {
-    
     @media (min-width: 720px) {
         display: flex;
-    
-    justify-content: center;
+
+        justify-content: center;
     }
+}
+.hide {
+    opacity:0;
+}
+.dontDisplay {
+    opacity: 0;
 }

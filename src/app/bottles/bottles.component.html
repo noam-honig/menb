@@ -32,7 +32,7 @@
             <div class="grow-item">
               <div class="full-page">
                 <div class="grow-item" style="overflow-y: hidden;overflow-x: hidden;">
-                  <img mat-card-image src="/api/images/{{b.id.value}}" alt="" style="max-height: 100%;max-width: 100%;object-fit: contain;margin: 0%;">
+                  <img mat-card-image  src="/api/images/{{b.id.value}}?{{b.imageReloadVersion}}" alt="" style="max-height: 100%;max-width: 100%;object-fit: contain;margin: 0%;">
                 </div>
 
                 <p>
@@ -40,11 +40,7 @@
                 </p>
               </div>
             </div>
-            <div>
-              <button mat-mini-fab color="primary" aria-label="העלה תמונה" (click)="uploadImage(b)">
-                <mat-icon>photo_camera</mat-icon>
-              </button>
-            </div>
+            
           </div>
         </mat-card>
       </div>

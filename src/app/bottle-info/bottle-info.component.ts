@@ -91,5 +91,60 @@ export class BottleInfoComponent implements OnInit {
       }
     });
   }
+  openImage() {
+    if (this.image.image.value){
+      var image = new Image();
+        image.src = this.image.image.value;;
+
+        var w = window.open("");
+        w.document.write(image.outerHTML);
+    }
+  }
+  async dropFile(e: DragEvent) {
+
+    e.preventDefault();
+    e.stopPropagation();
+    this.inDrag = false;
+    await this.loadFiles(e.dataTransfer.files);
+
+  }
+  private async loadFiles(files: any) {
+    for (let index = 0; index < files.length; index++) {
+      const file = files[index];
+      let f: File = file;
+      await new Promise((res) => {
+        var fileReader = new FileReader();
+
+        fileReader.onload = async (e: any) => {
+          this.image.image.value = e.target.result.toString();
+          this.image.fileName.value = f.name;
+          res({});
+
+        };
+        fileReader.readAsDataURL(f);
+      });
+    }
+  }
+
+  onFileInput(e: any) {
+    this.loadFiles(e.target.files);
+  }
+  dragEnter(e: DragEvent) {
+    this.inDrag = true;
+    this.preventDefault(e);
+
+  }
+  dragLeave(e: DragEvent) {
+    this.inDrag = false;
+    this.preventDefault(e);
+
+
+  }
+  inDrag = false;
+  preventDefault(eventArgs: any) {
+    eventArgs.preventDefault();
+    eventArgs.stopPropagation();
+
+  }
 
 }

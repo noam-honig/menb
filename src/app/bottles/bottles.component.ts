@@ -67,6 +67,7 @@ export class BottlesComponent implements OnInit {
     }],
     newRow:bottle=>{
       this.edit(bottle);
+    
     },
     where: p =>
       // if there is a search value, search by it
@@ -84,13 +85,6 @@ export class BottlesComponent implements OnInit {
 
       click: (bottle) => {
         this.edit(bottle);
-      }
-    }, {
-      textInMenu: 'צילום',
-      icon: 'photo_camera',
-      showInLine: true,
-      click: async (b) => {
-        this.uploadImage(b);
       }
     },
     {
@@ -129,10 +123,12 @@ export class BottlesComponent implements OnInit {
     });
   }
 
-  edit(bottle: Bottles) {
-    openDialog(BottleInfoComponent, c => c.args = {
+  async edit(bottle: Bottles) {
+    await openDialog(BottleInfoComponent, c => c.args = {
       bottle: bottle
     });
+    bottle.imageReloadVersion++;
+    
   }
 
   ngOnInit() {
@@ -143,7 +139,7 @@ export class BottlesComponent implements OnInit {
         openDialog(BottleInfoComponent, c => c.args = {
           bottle: this.bottles.items[0]
         })
-      }, 500);
+      }, 1500);
   }
 
   async prepareChart() {

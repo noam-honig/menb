@@ -3,14 +3,29 @@
     <div>
         <div class="two-columns">
             <data-area [settings]="rightArea"></data-area>
-            <div style="text-align: center;">
+            <div>
                 <data-area [settings]="leftArea"></data-area>
-                <div>
-                    <img *ngIf="image" [src]="image.image.value" style="max-width:400px">
-                </div>
-                <button mat-mini-fab color="primary" aria-label="העלה תמונה" (click)="upload()">
+                <input #fileInput type="file" (input)="onFileInput($event)" accept="image/*" id="uploadImage" style="display:none" />
+                <label for="uploadImage">
                     <mat-icon>photo_camera</mat-icon>
-                </button>
+                </label>
+                <div style="text-align: center; min-height:200px;position: relative;">
+
+                    <img *ngIf="image" [src]="image.image.value" style="max-width:400px;width:100%;height:100%">
+                    <div [class.dontDisplay]="!inDrag" style="position: absolute;
+                    top: 0px;
+                    background-color: lightgray;
+                    height: 100%;
+                    width: 100%;
+                    
+                    justify-content: space-around;
+                    align-items: center;
+                " (dragenter)="dragEnter($event)" (dragover)="dragEnter($event)" (dragleave)="dragLeave($event)"
+                        (drop)="dropFile($event);" (click)="openImage()">
+                        <h1>מקם קובץ תמונה כאן</h1>
+                    </div>
+
+                </div>
             </div>
         </div>
         <data-area [settings]="bottomArea"></data-area>
