@@ -70,7 +70,7 @@ export class BottlesComponent implements OnInit {
     },
     where: p =>
       // if there is a search value, search by it
-      this.searchString.value ? p.name.contains(this.searchString)
+      this.searchString.value ? p.name.contains(this.searchString).or(p.manufacturer.contains(this.searchString))
         : undefined
     ,
     columnSettings: (b) => [
