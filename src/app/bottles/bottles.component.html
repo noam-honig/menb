@@ -11,12 +11,17 @@
     </div>
   </div>
   <mat-tab-group class="grow-item tab">
-
     <mat-tab label="טבלה">
       <data-grid [settings]="bottles" class="grow-item"></data-grid>
     </mat-tab>
     <mat-tab label="כרטיסים">
       <div class="full-page" style="flex-direction: row;">
+        <button mat-mini-fab #scrollStart (click)="prevPage(scrollEnd)" [class.hidden]="bottles.page==1"
+          style="align-self:center">
+          <mat-icon>
+            arrow_forward_ios
+          </mat-icon>
+        </button>
         <mat-card *ngFor="let b of bottles.items" style="min-width: 300px;margin:10px;">
           <div class="full-page">
             <mat-card-header>
@@ -32,7 +37,8 @@
             <div class="grow-item">
               <div class="full-page">
                 <div class="grow-item" style="overflow-y: hidden;overflow-x: hidden;">
-                  <img mat-card-image  src="/api/images/{{b.id.value}}?{{b.imageReloadVersion}}" alt="" style="max-height: 100%;max-width: 100%;object-fit: contain;margin: 0%;">
+                  <img mat-card-image src="/api/images/{{b.id.value}}?{{b.imageReloadVersion}}" alt=""
+                    style="max-height: 100%;max-width: 100%;object-fit: contain;margin: 0%;">
                 </div>
 
                 <p>
@@ -40,9 +46,16 @@
                 </p>
               </div>
             </div>
-            
+
           </div>
         </mat-card>
+        <button mat-mini-fab #scrollEnd (click)="nextPage(scrollStart)" [class.hidden]="bottles.items.length==0"
+          style="align-self:center">
+          <mat-icon>
+            arrow_back_ios
+          </mat-icon>
+        </button>
+
       </div>
     </mat-tab>
 

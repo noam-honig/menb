@@ -13,6 +13,7 @@ import { BusyService, openDialog } from '@remult/angular';
 import * as xlsx from 'xlsx';
 
 import { GridSettings } from '@remult/angular';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-bottles',
@@ -52,7 +53,7 @@ export class BottlesComponent implements OnInit {
           let item = {};
           for (const col of p.columns) {
             item[col.defs.caption] = col.value;
-            if (col instanceof LookupColumn){
+            if (col instanceof LookupColumn) {
               await col.waitLoad();
               item[col.defs.caption] = col.displayValue;
             }
@@ -65,9 +66,9 @@ export class BottlesComponent implements OnInit {
       }
 
     }],
-    newRow:bottle=>{
+    newRow: bottle => {
       this.edit(bottle);
-    
+
     },
     where: p =>
       // if there is a search value, search by it
@@ -112,23 +113,37 @@ export class BottlesComponent implements OnInit {
   })
   columnSaver = new columnOrderAndWidthSaver(this.bottles);
 
-  uploadImage(b: Bottles) {
-    openDialog(UploadImageComponent, x => x.args = {
-      bottleId: b.id.value,
-      afterUpload: async (image,fileName) => {
-        let i = await b.findImage();
-        i.image.value = image;
-        await i.save();
-      }
+  nextPage(x: MatButton) {
+
+
+    this.bottles.nextPage().then(() => {
+      var e = x._elementRef.nativeElement;
+      e.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => {
+        e.focus();
+      }, 500);
     });
+
   }
 
+  prevPage(x: MatButton) {
+
+ 
+    this.bottles.previousPage().then(() =>{
+      var e = x._elementRef.nativeElement;
+      e.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => {
+        e.focus();
+      }, 500);
+    });
+
+  }
   async edit(bottle: Bottles) {
     await openDialog(BottleInfoComponent, c => c.args = {
       bottle: bottle
     });
     bottle.imageReloadVersion++;
-    
+
   }
 
   ngOnInit() {
