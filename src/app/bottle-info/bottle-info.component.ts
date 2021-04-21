@@ -133,6 +133,7 @@ export class BottleInfoComponent implements OnInit {
     if (this.image.image.value) {
       var image = new Image();
       image.src = this.image.image.value;;
+      image.style.width='100%';
 
       var w = window.open("");
       w.document.write(image.outerHTML);
