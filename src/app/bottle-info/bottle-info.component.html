@@ -5,14 +5,11 @@
             <data-area [settings]="rightArea"></data-area>
             <div>
                 <data-area [settings]="leftArea"></data-area>
-                <input #fileInput type="file" (input)="onFileInput($event)" accept="image/*" id="uploadImage" style="display:none" />
-                <label for="uploadImage">
-                    <mat-icon>photo_camera</mat-icon>
-                </label>
+               
                 <div style="text-align: center; min-height:200px;position: relative;">
 
                     <img *ngIf="image" [src]="image.image.value" style="max-width:400px;width:100%;height:100%">
-                    <div [class.dontDisplay]="!inDrag" style="position: absolute;
+                    <div [class.dontDisplay]="!inDrag&&this.image.image.value" style="position: absolute;
                     top: 0px;
                     background-color: lightgray;
                     height: 100%;
@@ -25,6 +22,40 @@
                         <h1>מקם קובץ תמונה כאן</h1>
                     </div>
 
+                </div>
+                <div style="    display: flex;
+                justify-content: space-between;">
+                    <input #fileInput type="file" (input)="onFileInput($event)" accept="image/*" id="uploadImage"
+                        style="display:none" />
+
+                    <button mat-icon-button [disabled]="imageIndex==0" (click)="back()">
+
+                        <mat-icon>
+                            arrow_forward_ios
+                        </mat-icon>
+                    </button>
+                    <button mat-icon-button>
+                        <label for="uploadImage">
+                            <mat-icon style="padding-top:10px">photo_camera</mat-icon>
+                        </label>
+                    </button>
+
+                    <button mat-icon-button [disabled]="imageIndex==0&&!image.image.value" (click)="deletePhoto()">
+                        <mat-icon>
+                            delete
+                        </mat-icon>
+                    </button>
+
+                    <button mat-icon-button [disabled]="!image.image.value" (click)="addAPhoto()">
+                        <mat-icon >
+                            add_a_photo
+                        </mat-icon>
+                    </button>
+                    <button mat-icon-button [disabled]="imageIndex>=images.length-1" (click)="next()">
+                        <mat-icon >
+                            arrow_back_ios
+                        </mat-icon>
+                    </button>
                 </div>
             </div>
         </div>

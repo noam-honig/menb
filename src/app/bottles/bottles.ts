@@ -1,4 +1,4 @@
-import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn, BoolColumn, Entity, SpecificEntityHelper, LookupColumn as RemultLookupColumn } from '@remult/core';
+import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn, BoolColumn, Entity, SpecificEntityHelper, LookupColumn as RemultLookupColumn, OneToMany } from '@remult/core';
 import { extend, getValueList, openDialog, SelectValueDialogComponent } from '@remult/angular';
 import { SqlBuilder } from '../common/sql-builder';
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
@@ -6,14 +6,8 @@ import { Roles } from '../users/roles';
 
 @EntityClass
 export class Bottles extends IdEntity {
-    async findImage() {
-        let r = await this.context.for(BottleImages).findFirst(x => x.bottleId.isEqualTo(this.id));
-        if (!r) {
-            r = this.context.for(BottleImages).create();
-            r.bottleId.value = this.id.value;
-        }
-        return r;
-    }
+    
+    images = new OneToMany(this.context.for(BottleImages),{where:b=>b.bottleId.isEqualTo(this.id)})
 
     name = new StringColumn({ caption: "שם" });
     manufacturer = new StringColumn({ caption: "יצרן" });
@@ -55,7 +49,7 @@ export class Bottles extends IdEntity {
         s.readOnly = true;
     })
 
-    imageReloadVersion=0;
+    imageReloadVersion = 0;
     constructor(private context: Context) {
         super({
             name: "Bottles",
@@ -76,11 +70,16 @@ export class BottleImages extends IdEntity {
     bottleId = new IdColumn();
     image = new StringColumn();
     fileName = new StringColumn();
-    constructor() {
+    num = new NumberColumn();
+    constructor(context: Context) {
         super({
             name: 'bottleImages',
             allowApiCRUD: Roles.admin,
-            allowApiRead: context => context.isSignedIn()
+            allowApiRead: context => context.isSignedIn(),
+            defaultOrderBy:()=>this.num,
+            saving: async () => {
+               
+            }
         });
     }
 }
@@ -91,10 +90,10 @@ export class LookupColumn<T extends lookupEntity> extends RemultLookupColumn<T> 
             caption
         });
         extend(this).dataControl(s => {
-            s.getValue = () =>  this.displayValue;
+            s.getValue = () => this.displayValue;
             s.hideDataOnInput = true;
             s.click = async () => {
-                
+
                 openDialog(SelectValueDialogComponent, async x => x.args({
                     values: await getValueList(provider),
                     onSelect: (x) => this.value = x.id

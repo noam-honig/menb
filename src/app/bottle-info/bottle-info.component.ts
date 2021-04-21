@@ -12,11 +12,45 @@ import { openDialog, DataAreaSettings } from '@remult/angular';
 })
 export class BottleInfoComponent implements OnInit {
 
-  constructor(private dialog: MatDialogRef<any>, private context: Context) { }
+  constructor(private dialog: MatDialogRef<any>, private context: Context) {
+    dialog.afterClosed().subscribe(() => {
+      if (this.saved)
+        this.args.bottle.undoChanges();
+    });
+  }
   args: {
     bottle: Bottles
   }
-  image: BottleImages;
+  images: BottleImages[] = [];
+  imageIndex = 0;
+  get image() {
+    if (this.images.length == 0) {
+      this.images.push(this.args.bottle.images.create());
+      this.imageIndex = 0;
+    }
+    return this.images[this.imageIndex];
+  }
+  back() {
+    if (this.imageIndex > 0)
+      this.imageIndex--;
+  }
+  next() {
+    if (this.imageIndex < this.images.length - 1) {
+      this.imageIndex++;
+    }
+  }
+  addAPhoto() {
+    this.images.push(this.args.bottle.images.create());
+    this.imageIndex = this.images.length - 1;
+    this.image.num.value = this.images.length;
+  }
+  deletePhoto() {
+    this.toDeleteImages.push(this.image);
+    this.images = this.images.filter(x => x != this.image);
+    if (this.imageIndex >= this.images.length)
+      this.imageIndex = this.images.length - 1;
+  }
+  toDeleteImages: BottleImages[]=[];
   rightArea: DataAreaSettings;
   leftArea: DataAreaSettings;
   bottomArea: DataAreaSettings;
@@ -59,24 +93,28 @@ export class BottleInfoComponent implements OnInit {
     });
     if (!this.args.bottle.isNew()) {
       this.args.bottle.reload();
-      this.args.bottle.findImage().then(i => this.image = i);
-    } else {
-      this.image = this.context.for(BottleImages).create();
+      this.args.bottle.images.reload().then(x => {
+        this.images = x;
+      });
     }
   }
 
+  saved = false;
   async save() {
     await this.args.bottle.save();
-
-    if (this.image.image.value != this.image.image.originalValue) {
-      this.image.bottleId.value = this.args.bottle.id.value;
-      await this.image.save();
+    for (const i of this.images) {
+      if (i.image.wasChanged()) {
+        i.bottleId.value = this.args.bottle.id.value;
+        await i.save();
+        this.saved = true;
+      }
     }
-
+    for (const i of this.toDeleteImages) {
+      await i.delete();
+    }
     this.dialog.close();
   }
   close() {
-    this.args.bottle.undoChanges();
     this.dialog.close();
   }
   async upload() {
@@ -92,12 +130,12 @@ export class BottleInfoComponent implements OnInit {
     });
   }
   openImage() {
-    if (this.image.image.value){
+    if (this.image.image.value) {
       var image = new Image();
-        image.src = this.image.image.value;;
+      image.src = this.image.image.value;;
 
-        var w = window.open("");
-        w.document.write(image.outerHTML);
+      var w = window.open("");
+      w.document.write(image.outerHTML);
     }
   }
   async dropFile(e: DragEvent) {
