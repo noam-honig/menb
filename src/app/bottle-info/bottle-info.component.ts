@@ -79,7 +79,7 @@ export class BottleInfoComponent implements OnInit {
     });
     this.bottomArea = new DataAreaSettings({
       fields: () => [
-        mapFieldType( b.state!),
+        mapFieldType(b.state!),
         mapFieldType(b.location!),
         [b.entryDate!, b.origin],
         [b.cost, b.worth],
@@ -183,7 +183,7 @@ export class BottleInfoComponent implements OnInit {
   }
 
 }
-export function mapFieldType(field: FieldMetadata | FieldRef | FieldRef[]) {
+export function mapFieldType(field: FieldMetadata | FieldRef) {
   let meta: FieldMetadata = (field as FieldRef).metadata;
   if (!meta)
     meta = field as FieldMetadata;
@@ -202,5 +202,5 @@ export function mapFieldType(field: FieldMetadata | FieldRef | FieldRef[]) {
       }
     } as DataControlSettings
   }
-  return meta;
+  return { field };
 }
