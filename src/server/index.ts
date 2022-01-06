@@ -12,6 +12,7 @@ import * as compression from 'compression';
 import { getJwtTokenSignKey } from '../app/auth.server.service';
 import '../app/bottles/bottles';
 import { BottleImages } from '../app/bottles/bottles';
+import * as sharp from 'sharp';
 
 async function startup() {
     config(); //loads the configuration from the .env file
@@ -46,8 +47,7 @@ async function startup() {
         let type = split[0].substring(5).replace(';base64', '');
 
         res.contentType(type);
-
-        res.send(Buffer.from(split[1], 'base64'));
+        res.send(await sharp(Buffer.from(split[1], 'base64')).resize(200).toBuffer());
         //
 
     });
@@ -76,4 +76,5 @@ startup();
 * V - make ltr 
 * make advanced search
 * show older bottles first
+* Add bottle type
 */
