@@ -54,10 +54,10 @@ async function startup() {
 
 
 
-    app.use(express.static('dist/my-project'));
+    app.use(express.static('dist/men-collection'));
     app.use('/*', async (req, res) => {
         try {
-            res.sendFile('./dist/men-collection/index.html');
+            res.sendFile(process.cwd() + '/dist/men-collection/index.html');
         } catch (err) {
             res.sendStatus(500);
         }
