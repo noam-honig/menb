@@ -5,6 +5,7 @@ import { AuthService } from '../auth.service';
 import { BottleInfoComponent } from '../bottle-info/bottle-info.component';
 import { Bottles } from '../bottles/bottles';
 import { BottlesComponent } from '../bottles/bottles.component';
+import { InputAreaComponent } from '../common/input-area/input-area.component';
 import { terms } from '../terms';
 import { Roles } from '../users/roles';
 
@@ -81,13 +82,7 @@ export class NewListComponent implements OnInit, AfterViewInit {
       try {
         let newPaginator = await this.remult.repo(Bottles).query({
           pageSize: 20,
-          
-          where: {
-            $or: [
-              { name: { $contains: this.searchString } },
-              { manufacturer: { $contains: this.searchString } }
-            ]
-          }
+          where: Bottles.search(this.searchString)
         }).paginator();
         if (myLoad == this.loadCount) {
           this.paginator = newPaginator;
@@ -101,6 +96,48 @@ export class NewListComponent implements OnInit, AfterViewInit {
       }
     })
   }
+  advancedSearch() {
+    new SearchParams().show((search) => {
+      this.searchString = search;
+      this.reloadData();
+    });
+  }
 
-  
+
+}
+
+class SearchParams {
+  @Field()
+  hasTheWord = '';
+  @Field()
+  name = '';
+  @Field()
+  manufacturer = '';
+  @Field()
+  country = '';
+  @Field()
+  type = '';
+  get $() { return getFields(this) }
+  show(ok: (search: string) => void) {
+    openDialog(InputAreaComponent, x => x.args = {
+      title: "Advanced Search",
+      fields: () => this.$.toArray(),
+      ok: () => {
+        let result: string[] = [];
+        const push = (what: string, prefix?: string) => {
+          if (what)
+            if (prefix)
+              result.push(prefix + ":" + what);
+            else
+              result.push(what);
+        }
+        push(this.hasTheWord);
+        push(this.name, 'n');
+        push(this.manufacturer, 'm');
+        push(this.country, 'c');
+        push(this.type, 't');
+        ok(result.join(' '))
+      }
+    })
+  }
 }

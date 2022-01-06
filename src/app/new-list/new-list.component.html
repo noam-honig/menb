@@ -17,7 +17,7 @@ background-position: center;">
                 <mat-icon>menu</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-
+                <button mat-menu-item (click)="advancedSearch()">Advanced Search</button>
                 <button mat-menu-item (click)="auth.showSignIn()"
                     *ngIf="!remult.authenticated()">{{terms.signIn}}</button>
                 <button mat-menu-item (click)="toBottles()" *ngIf="isAdmin()">Bottles</button>

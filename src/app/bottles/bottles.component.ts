@@ -70,12 +70,7 @@ export class BottlesComponent implements OnInit {
       this.edit(bottle);
 
     },
-    where: () => ({
-      $or: [
-        { name: { $contains: this.searchString } },
-        { manufacturer: { $contains: this.searchString } }
-      ]
-    })
+    where: () => Bottles.search(this.searchString)
     ,
     columnSettings: (b) => [
       ...b.toArray().filter(x => x != b.id).map(mapFieldType)

@@ -1,14 +1,14 @@
-import { IdEntity, Entity, OneToMany, Field, DateOnlyField, IntegerField, Remult, Allow } from 'remult';
+import { IdEntity, Entity, OneToMany, Field, DateOnlyField, IntegerField, Remult, Allow, Filter, EntityFilter, ContainsStringValueFilter } from 'remult';
 
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
 import { Roles } from '../users/roles';
 
 @Entity<Bottles>(
     "Bottles", {
-    
+
     allowApiCrud: Roles.admin,
     allowApiRead: true,
-    defaultOrderBy: { createDate: "asc" },
+    defaultOrderBy: { createDate: "desc" },
     saving: (self) => {
         if (self.isNew())
             self.createDate = new Date();
@@ -22,29 +22,22 @@ export class Bottles extends IdEntity {
     name: string = '';
     @Field()
     manufacturer: string = '';
-
     @Field()
     country?: Countries;
-
-
     @Field()
     comments: string = '';
     @Field()
     bottleType?: BottleTypes;
-
     @Field()
     shape?: Shapes;
-
     @Field()
     shapeComments: string = '';
-
     @Field()
     type?: Types;
     @Field()
     subType: string = '';
     @Field()
     quantity: number = 0;
-
     @Field()
     state?: States;
     @Field()
@@ -81,7 +74,32 @@ export class Bottles extends IdEntity {
     )
     hasImage: boolean = false;
 
-
+    static search = Filter.createCustom<Bottles, string>(async (r, search) => {
+        if (!search)
+            return undefined!;
+        const result: EntityFilter<Bottles>[] = [];
+        for (let s of search.split(' ')) {
+            s = s.trim();
+            if (s != '') {
+                let prefix = '';
+                if (s.length > 1 && s[1] == ':') {
+                    prefix = s[0].toLowerCase();
+                    s = s.substring(2);
+                }
+                let contains: ContainsStringValueFilter = { $contains: s };
+                result.push({
+                    $or: [
+                        !(prefix == 'n' || !prefix) ? undefined! : { name: contains },
+                        !(prefix == 'm' || !prefix) ? undefined! : { manufacturer: contains },
+                        !(!prefix) ? undefined! : { comments: contains },
+                        !(prefix == 'c' || !prefix) ? undefined! : { country: await r.repo(Countries).find({ where: { name: contains } }) },
+                        !(prefix == 't' || !prefix) ? undefined! : { type: await r.repo(Types).find({ where: { name: contains } }) }
+                    ]
+                })
+            }
+        }
+        return { $and: result };
+    });
 
     imageReloadVersion = 0;
     constructor(public remult: Remult) {

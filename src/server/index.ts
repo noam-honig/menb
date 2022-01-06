@@ -37,10 +37,14 @@ async function startup() {
     app.use('/api/docs', swaggerUi.serve,
         swaggerUi.setup(api.openApiDoc({ title: 'remult-react-todo' })));
     app.get('/api/images/:id', async (req, res) => {
+        if (process.env['NO_IMAGE']) {
+            res.sendFile(process.cwd() + '/dist/men-collection/assets/wine.png')
+            return;
+        }
         let remult = await api.getRemult(req);
         let i = await remult.repo(BottleImages).findFirst({ bottleId: req.params.id });
         if (!i) {
-            res.sendFile(process.cwd() + '/dist/men-collection/wine.png')
+            res.sendFile(process.cwd() + '/dist/men-collection/assets/wine.png')
             return;
         }
         let split = i.image.split(',');
@@ -72,11 +76,11 @@ startup();
 /*
 * V - paging, repeats the same page all the time.
 * V - replace home with bottles.
-* search in type, country, name,manfacture,comment
-* space is and - in the search.
+* V - search in type, country, name,manfacture,comment
+* V - space is and - in the search.
 * V - In the home lage, show latest bottles
 * V - make ltr 
-* make advanced search
+* V - make advanced search
 * show older bottles first
-* Add bottle type
+* V - Add bottle type
 */
