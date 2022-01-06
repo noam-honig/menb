@@ -31,18 +31,7 @@ export class AppComponent implements OnInit {
   terms = terms;
 
   async signIn() {
-    let user = new InputField<string>({ caption: terms.username });
-    let password = new PasswordControl();
-    openDialog(InputAreaComponent, i => i.args = {
-      title: terms.signIn,
-      fields: () => [
-        user,
-        password
-      ],
-      ok: async () => {
-        this.auth.signIn(user.value, password.value);
-      }
-    });
+    this.auth.showSignIn();
   }
 
   ngOnInit(): void {

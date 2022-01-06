@@ -1,8 +1,7 @@
 <div class="full-page" style="background:linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(assets/bg.jpeg);
 background-position: center;">
     <div class="grow-item">
-        <div class="mat-elevation-z8"
-         style="display: flex;
+        <div class="mat-elevation-z8" style="display: flex;
     border-radius: 10px;
     background-color: white;
     padding:10px;
@@ -14,6 +13,16 @@ background-position: center;">
     top:0;
     z-index: 10;
     margin:8px">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+
+                <button mat-menu-item (click)="auth.showSignIn()"
+                    *ngIf="!remult.authenticated()">{{terms.signIn}}</button>
+                <button mat-menu-item (click)="toBottles()" *ngIf="isAdmin()">Bottles</button>
+                <button mat-menu-item (click)="auth.signOut()" *ngIf="remult.authenticated()">{{terms.signOut}}</button>
+            </mat-menu>
             <data-control [field]="$.searchString" style="    flex-grow: 1;
       margin-left: 10px;"></data-control>
             <div style="margin-left:5px">
@@ -39,7 +48,7 @@ background-position: center;">
             <div #my width="100%" style=" width: 100%;
         display: flex;
         justify-content: center;">.<span *ngIf="loading">
-                    <mat-spinner class="spin" ></mat-spinner>
+                    <mat-spinner class="spin"></mat-spinner>
                 </span></div>
         </div>
 

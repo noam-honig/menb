@@ -1,12 +1,30 @@
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { InputField, openDialog } from '@remult/angular';
 import { Remult } from 'remult';
 import { AuthServerService } from './auth.server.service';
+import { InputAreaComponent } from './common/input-area/input-area.component';
+import { terms } from './terms';
+import { PasswordControl } from './users/PasswordControl';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
+    showSignIn() {
+        let user = new InputField<string>({ caption: terms.username });
+        let password = new PasswordControl();
+        openDialog(InputAreaComponent, i => i.args = {
+            title: terms.signIn,
+            fields: () => [
+                user,
+                password
+            ],
+            ok: async () => {
+                this.signIn(user.value, password.value);
+            }
+        });
+    }
     async signIn(username: string, password: string) {
         this.setAuthToken(await AuthServerService.signIn(username, password));
     }
