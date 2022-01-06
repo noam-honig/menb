@@ -1,39 +1,38 @@
-import { IdEntity, NumberColumn, ServerContext, SqlDatabase } from "@remult/core";
-import { PostgresSchemaBuilder, verifyStructureOfAllEntities } from "@remult/server-postgres";
-import { Bottles } from "../bottles/bottles";
+import { Entity, Field, IdEntity, Remult, SqlDatabase } from "remult";
+import { PostgresSchemaBuilder } from "remult/postgres";
+import { Bottles } from "src/app/bottles/bottles";
 
+@Entity(undefined!, {
+    dbName: "versionInfo"
+})
 export class VersionInfo extends IdEntity {
-    version = new NumberColumn();
-    constructor() {
-        super({
-            name: "versionInfo",
-            allowApiCRUD: false
-        });
-    }
+    @Field()
+    version: number = 0;
+
 }
 
 export async function versionUpdate(db: SqlDatabase) {
-    let context = new ServerContext(db);
+    let remult = new Remult(db);
     var schemaBuilder = new PostgresSchemaBuilder(db);
-    await schemaBuilder.verifyStructureOfAllEntities();
-    await schemaBuilder.createIfNotExist(context.for(VersionInfo).create());
+    await schemaBuilder.verifyStructureOfAllEntities(remult);
+    await schemaBuilder.createIfNotExist(remult.repo(VersionInfo).metadata);
     let version = async (ver: number, what: () => Promise<void>) => {
-        let v = await context.for(VersionInfo).findFirst();
+        let v = await remult.repo(VersionInfo).findFirst();
         if (!v) {
-            v = context.for(VersionInfo).create();
-            v.version.value = 0;
+            v = remult.repo(VersionInfo).create();
+            v.version = 0;
         }
-        if (v.version.value <= ver - 1) {
+        if (v.version <= ver - 1) {
             await what();
-            v.version.value = ver;
+            v.version = ver;
             await v.save();
         }
     };
-    let b = context.for(Bottles).create();
+    let b = remult.repo(Bottles).metadata;
 
     version(1, async () => {
 
-        await db.execute('alter table ' + b.defs.dbName + ' drop column ' + b.alcohol.defs.dbName);
+        await db.execute('alter table ' + await b.getDbName() + ' drop column ' + await b.fields.alcohol.getDbName());
         await schemaBuilder.verifyAllColumns(b);
     });
 

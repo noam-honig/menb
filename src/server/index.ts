@@ -49,7 +49,6 @@ async function startup() {
         }
         let split = i.image.split(',');
         let type = split[0].substring(5).replace(';base64', '');
-        console.log(type);
         if (req.query['small'] === '1') {
             res.contentType(type);
             res.send(await sharp(Buffer.from(split[1], 'base64')).resize(200).withMetadata().toBuffer());
