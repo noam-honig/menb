@@ -38,25 +38,25 @@ export class Bottles extends IdEntity {
     subType: string = '';
     @Field()
     quantity: number = 0;
-    @Field()
+    @Field({ includeInApi: Roles.admin })
     state?: States;
-    @Field()
+    @Field({ includeInApi: Roles.admin })
     location?: Locations;
     @Field()
     alcohol: number = 0;
     @IntegerField()
     volume: number = 0;
-    @DateOnlyField()
+    @DateOnlyField({ includeInApi: Roles.admin })
     entryDate?: Date;
-    @Field()
+    @Field({ includeInApi: Roles.admin })
     origin: string = '';
-    @Field()
+    @Field({ includeInApi: Roles.admin })
     cost: number = 0;
-    @DateOnlyField()
+    @DateOnlyField({ includeInApi: Roles.admin })
     exitDate?: Date;
-    @Field()
+    @Field({ includeInApi: Roles.admin })
     exitReason: string = '';
-    @Field()
+    @Field({ includeInApi: Roles.admin })
     worth: number = 0;
     @Field({ allowApiUpdate: false })
     createDate?: Date;
