@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { InputField, openDialog } from '@remult/angular';
 import { Remult } from 'remult';
-import { AuthServerService } from './auth.server.service';
+import { Users } from './users/users';
 import { InputAreaComponent } from './common/input-area/input-area.component';
 import { terms } from './terms';
 import { PasswordControl } from './users/PasswordControl';
@@ -26,7 +26,7 @@ export class AuthService {
         });
     }
     async signIn(username: string, password: string) {
-        this.setAuthToken(await AuthServerService.signIn(username, password));
+        this.setAuthToken(await Users.signIn(username, password));
     }
 
     setAuthToken(token: string) {

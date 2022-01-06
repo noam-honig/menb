@@ -9,7 +9,7 @@ import * as swaggerUi from 'swagger-ui-express';
 import * as helmet from 'helmet';
 import * as jwt from 'express-jwt';
 import * as compression from 'compression';
-import { getJwtTokenSignKey } from '../app/auth.server.service';
+import { getJwtTokenSignKey } from '../app/users/users'
 import '../app/bottles/bottles';
 import { BottleImages } from '../app/bottles/bottles';
 import * as sharp from 'sharp';
