@@ -17,7 +17,6 @@ import { Roles } from '../users/roles';
 export class Bottles extends IdEntity {
 
     images = new OneToMany(this.remult.repo(BottleImages), { where: { bottleId: this.id } });
-
     @Field()
     name: string = '';
     @Field()

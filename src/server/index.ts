@@ -26,9 +26,9 @@ async function startup() {
         })
     );
     const dataProvider = async () => {
-        //if (process.env['NODE_ENV'] === "production")
-        return createPostgresConnection({ configuration: "heroku", autoCreateTables: false, sslInDev: true })
-        //return undefined;
+        if (process.env['NODE_ENV'] === "production")
+            return createPostgresConnection({ configuration: "heroku", autoCreateTables: false, sslInDev: true })
+        return undefined;
     }
     let api = remultExpress({
         dataProvider
@@ -49,11 +49,15 @@ async function startup() {
         }
         let split = i.image.split(',');
         let type = split[0].substring(5).replace(';base64', '');
-        let buff =
+        console.log(type);
+        if (req.query['small'] === '1') {
             res.contentType(type);
-        if (req.query['small'] === '1')
-            res.send(await sharp(Buffer.from(split[1], 'base64')).resize(200).toBuffer());
-        else res.send(Buffer.from(split[1], 'base64'));
+            res.send(await sharp(Buffer.from(split[1], 'base64')).resize(200).withMetadata().toBuffer());
+        }
+        else {
+            res.contentType(type);
+            res.send(Buffer.from(split[1], 'base64'));
+        }
         //
 
     });
