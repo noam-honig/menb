@@ -11,7 +11,7 @@ import * as jwt from 'express-jwt';
 import * as compression from 'compression';
 import { getJwtTokenSignKey } from '../app/users/users'
 import '../app/bottles/bottles';
-import { BottleImages } from '../app/bottles/bottles';
+import { BottleImages, SmallImages } from '../app/bottles/bottles';
 import * as sharp from 'sharp';
 
 async function startup() {
@@ -27,7 +27,7 @@ async function startup() {
     );
     const dataProvider = async () => {
         if (process.env['NODE_ENV'] === "production")
-            return createPostgresConnection({ configuration: "heroku", autoCreateTables: false, sslInDev: true })
+            return createPostgresConnection({ configuration: "heroku", autoCreateTables: true, sslInDev: true })
         return undefined;
     }
     let api = remultExpress({
@@ -37,28 +37,47 @@ async function startup() {
     app.use('/api/docs', swaggerUi.serve,
         swaggerUi.setup(api.openApiDoc({ title: 'remult-react-todo' })));
     app.get('/api/images/:id', async (req, res) => {
+
+        const noImage = () => res.sendFile(process.cwd() + '/dist/men-collection/assets/wine.png');
+
         if (process.env['NO_IMAGE']) {
-            res.sendFile(process.cwd() + '/dist/men-collection/assets/wine.png')
-            return;
+            return noImage();
         }
         let remult = await api.getRemult(req);
-        let i = await remult.repo(BottleImages).findFirst({ bottleId: req.params.id });
-        if (!i) {
-            res.sendFile(process.cwd() + '/dist/men-collection/assets/wine.png')
+        const getImage = async () => {
+            let i = await remult.repo(BottleImages).findFirst({ bottleId: req.params.id });
+            if (!i) {
+                return { buffer: undefined, type: '' }
+            }
+            let split = i.image.split(',');
+            let type = split[0].substring(5).replace(';base64', '');
+            return { buffer: split[1], type }
+        }
+
+        if (req.query['small'] === '1') {
+            const smallImage = await remult.repo(SmallImages).findFirst({ bottleId: req.params.id }, { createIfNotFound: true });
+            if (smallImage.isNew()) {
+                let { buffer, type } = await getImage();
+                if (!buffer)
+                    return noImage();
+                smallImage.image = await (await sharp(Buffer.from(buffer, 'base64')).resize(200).withMetadata().toBuffer()).toString("base64");
+                smallImage.contentType = type;
+                await smallImage.save();
+            }
+            res.contentType(smallImage.contentType);
+            res.send(Buffer.from(smallImage.image, "base64"));
             return;
         }
-        let split = i.image.split(',');
-        let type = split[0].substring(5).replace(';base64', '');
-        if (req.query['small'] === '1') {
-            res.contentType(type);
-            res.send(await sharp(Buffer.from(split[1], 'base64')).resize(200).withMetadata().toBuffer());
-        }
         else {
+            let { buffer, type } = await getImage();
+            if (!buffer) {
+                return noImage();
+            }
             res.contentType(type);
-            res.send(Buffer.from(split[1], 'base64'));
-        }
-        //
+            res.send(Buffer.from(buffer, 'base64'));
 
+
+        }
     });
 
 

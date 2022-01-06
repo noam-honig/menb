@@ -102,10 +102,14 @@ export class Bottles extends IdEntity {
     }
 }
 
-@Entity('bottleImages', {
+@Entity<BottleImages>('bottleImages', {
     allowApiCrud: Roles.admin,
     allowApiRead: Allow.authenticated,
-    defaultOrderBy: { num: "asc" },
+    defaultOrderBy: { num: "asc" }
+}, (options, remult) => options.saving = async (self) => {
+    for (const smallImage of await remult.repo(SmallImages).find({ where: { bottleId: self.bottleId } })) {
+        await smallImage.delete();
+    }
 })
 export class BottleImages extends IdEntity {
     @Field()
@@ -116,6 +120,18 @@ export class BottleImages extends IdEntity {
     fileName: string = '';
     @IntegerField()
     num: number = 0;
+}
 
+@Entity('smallImages', {
+    allowApiCrud: false,
+    defaultOrderBy: { num: "asc" },
+})
+export class SmallImages extends IdEntity {
+    @Field()
+    bottleId: string = '';
+    @Field()
+    image: string = '';
+    @Field()
+    contentType: string = '';
 
 }
