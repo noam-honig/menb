@@ -40,14 +40,16 @@ async function startup() {
         let remult = await api.getRemult(req);
         let i = await remult.repo(BottleImages).findFirst({ bottleId: req.params.id });
         if (!i) {
-            res.sendStatus(404);
+            res.sendFile(process.cwd() + '/dist/men-collection/wine.png')
             return;
         }
         let split = i.image.split(',');
         let type = split[0].substring(5).replace(';base64', '');
-
+        let buff = Buffer.from(split[1], 'base64');
+        if (req.query['small'] === '1')
+            buff = await sharp().resize(200).toBuffer();
         res.contentType(type);
-        res.send(await sharp(Buffer.from(split[1], 'base64')).resize(200).toBuffer());
+        res.send(buff);
         //
 
     });
