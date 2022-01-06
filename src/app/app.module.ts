@@ -29,6 +29,8 @@ import { BottlesComponent } from './bottles/bottles.component';
 import { BottleInfoComponent } from './bottle-info/bottle-info.component';
 import { JwtModule } from '@auth0/angular-jwt';
 import { AuthService } from './auth.service';
+import { NewListComponent } from './new-list/new-list.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -40,9 +42,11 @@ import { AuthService } from './auth.service';
     ManageComponent,
     BottlesComponent,
     RunningNumberComponent,
-    BottleInfoComponent
+    BottleInfoComponent,
+    NewListComponent
   ],
   imports: [
+    MatProgressSpinnerModule,
     BrowserModule,
     AppRoutingModule,
     FormsModule,

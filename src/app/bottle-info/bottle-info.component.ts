@@ -79,8 +79,8 @@ export class BottleInfoComponent implements OnInit {
     });
     this.bottomArea = new DataAreaSettings({
       fields: () => [
-        b.state!,
-        b.location!,
+        mapFieldType( b.state!),
+        mapFieldType(b.location!),
         [b.entryDate!, b.origin],
         [b.cost, b.worth],
         [b.exitDate!, b.exitReason]

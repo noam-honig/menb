@@ -21,6 +21,10 @@ function LookupTableDefs(key: string, caption: string) {
         FieldType<LookupTableBase>({
             selectType:entity,
             displayValue: (_, x) => x?.name,
+            valueConverter: {
+                toJson: x => x != undefined ? x : '',
+                fromJson: x => x ? x : null
+            },
         })(entity);
         Entity(key, {
             caption,
