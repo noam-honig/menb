@@ -49,7 +49,7 @@ export class AppComponent implements OnInit {
 
   }
   isHome() {
-    return this.currentTitle()=="home";
+    return this.currentTitle()=="";
   }
 
   signOut() {

@@ -7,8 +7,8 @@ import { Roles } from '../users/roles';
     "Bottles", {
     
     allowApiCrud: Roles.admin,
-    allowApiRead: Allow.authenticated,
-    defaultOrderBy: { name: "asc" },
+    allowApiRead: true,
+    defaultOrderBy: { createDate: "desc" },
     saving: (self) => {
         if (self.isNew())
             self.createDate = new Date();

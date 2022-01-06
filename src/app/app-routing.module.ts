@@ -14,12 +14,11 @@ import { NewListComponent } from './new-list/new-list.component';
 
 
 const routes: Routes = [
-  { path: 'home', component: NewListComponent },
+  { path: '', component: NewListComponent },
   { path: 'bottles', component: BottlesComponent, canActivate: [AuthenticatedInGuard] },
   { path: 'Settings', component: ManageComponent, canActivate: [AdminGuard] },
   { path: 'Users', component: UsersComponent, canActivate: [AdminGuard] },
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: '**', redirectTo: '/home', pathMatch: 'full' }
+    { path: '**', redirectTo: '/', pathMatch: 'full' }
 
 ];
 

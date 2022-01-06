@@ -68,6 +68,7 @@ export class NewListComponent implements OnInit, AfterViewInit {
       try {
         let newPaginator = await this.remult.repo(Bottles).query({
           pageSize: 20,
+          orderBy: { createDate: "desc" },
           where: {
             $or: [
               { name: { $contains: this.searchString } },

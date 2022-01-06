@@ -29,7 +29,7 @@ function LookupTableDefs(key: string) {
         Entity(key, {
             defaultOrderBy: { name: "asc" },
             allowApiCrud: Roles.admin,
-            allowApiRead: Allow.authenticated
+            allowApiRead: true
         })(entity)
     }
 }

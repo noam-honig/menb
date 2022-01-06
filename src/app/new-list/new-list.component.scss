@@ -20,3 +20,9 @@
       height:300px;
       object-fit: contain;
   }
+  ::ng-deep .spin{
+     > svg > circle
+    {
+      stroke:white;
+    }
+  }
