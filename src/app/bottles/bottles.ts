@@ -8,7 +8,7 @@ import { Roles } from '../users/roles';
     
     allowApiCrud: Roles.admin,
     allowApiRead: true,
-    defaultOrderBy: { createDate: "desc" },
+    defaultOrderBy: { createDate: "asc" },
     saving: (self) => {
         if (self.isNew())
             self.createDate = new Date();

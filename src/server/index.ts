@@ -68,11 +68,12 @@ async function startup() {
 startup();
 
 /*
-* paging, repeats the same page all the time.
-* replace home with bottles.
+* V - paging, repeats the same page all the time.
+* V - replace home with bottles.
 * search in type, country, name,manfacture,comment
 * space is and - in the search.
-* In the home lage, show latest bottles
-* make ltr 
+* V - In the home lage, show latest bottles
+* V - make ltr 
 * make advanced search
+* show older bottles first
 */

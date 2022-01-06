@@ -31,6 +31,7 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { AuthService } from './auth.service';
 import { NewListComponent } from './new-list/new-list.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { BottleCardComponent } from './bottle-card/bottle-card.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     BottlesComponent,
     RunningNumberComponent,
     BottleInfoComponent,
-    NewListComponent
+    NewListComponent,
+    BottleCardComponent
   ],
   imports: [
     MatProgressSpinnerModule,

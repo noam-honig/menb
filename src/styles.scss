@@ -18,3 +18,18 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-tab-body-wrapper{
   flex-grow: 1;
 }
+
+
+.container{
+  display:flex;
+  flex-flow: wrap;
+  gap:8px;
+  padding:8px;
+}
+
+.example-card {
+width:100%;
+@media (min-width: 720px) {
+max-width: 240px;
+}
+}

@@ -1,0 +1,15 @@
+<mat-card>
+    <img mat-card-image src="/api/images/{{b.id}}?{{b.imageReloadVersion}}">
+    <mat-card-content>
+        <p>{{b.name}}</p>
+        <p>{{b.manufacturer}} - {{b.country?.name}}</p>
+        <p>
+            {{b.comments}}
+        </p>
+    </mat-card-content>
+    <mat-card-actions *ngIf="isAdmin()">
+        <button mat-mini-fab color="none" (click)="edit(b)">
+            <mat-icon>edit</mat-icon>
+        </button>
+    </mat-card-actions>
+</mat-card>

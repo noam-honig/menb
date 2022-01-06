@@ -30,21 +30,8 @@ background-position: center;">
             </div>
         </div>
         <div class="container ">
-            <mat-card class="example-card" *ngFor="let b of bottles">
-                <img mat-card-image src="/api/images/{{b.id}}?{{b.imageReloadVersion}}">
-                <mat-card-content>
-                    <p>{{b.name}}</p>
-                    <p>{{b.manufacturer}} - {{b.country?.name}}</p>
-                    <p>
-                        {{b.comments}}
-                    </p>
-                </mat-card-content>
-                <mat-card-actions>
-                    <button mat-mini-fab color="none" aria-label="ערוך" (click)="edit(b)">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                </mat-card-actions>
-            </mat-card>
+            <app-bottle-card *ngFor="let b of bottles" class="example-card" [b]="b"></app-bottle-card>
+
             <div #my width="100%" style=" width: 100%;
         display: flex;
         justify-content: center;">.<span *ngIf="loading">
