@@ -45,11 +45,11 @@ async function startup() {
         }
         let split = i.image.split(',');
         let type = split[0].substring(5).replace(';base64', '');
-        let buff = Buffer.from(split[1], 'base64');
+        let buff =
+            res.contentType(type);
         if (req.query['small'] === '1')
-            buff = await sharp().resize(200).toBuffer();
-        res.contentType(type);
-        res.send(buff);
+            res.send(await sharp(Buffer.from(split[1], 'base64')).resize(200).toBuffer());
+        else res.send(Buffer.from(split[1], 'base64'));
         //
 
     });
