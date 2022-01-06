@@ -60,10 +60,6 @@ export class Bottles extends IdEntity {
     worth: number = 0;
     @Field({ allowApiUpdate: false })
     createDate?: Date;
-    // @DataControl({
-    //     width: '60',
-    //     readonly: true
-    // })
     @Field<Bottles>({
 
         caption: 'תמונה',
