@@ -1,14 +1,18 @@
 <div class="full-page" style="background:linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(assets/bg.jpeg);
 background-position: center;">
     <div style="display: flex;
+    border-radius: 10px;
     background-color: white;
-    width: 100%;
+    padding:10px;
+    font-size:18px;
     justify-content: space-between;
-    align-items: center;">
+    align-items: center;
+    padding-bottom: 2px;
+    margin:20px">
         <data-control [field]="$.searchString" style="    flex-grow: 1;
       margin-left: 10px;"></data-control>
-        <div>
-            <app-number [value]="count"></app-number> בקבוקים
+        <div style="margin-left:5px">
+            <app-number [value]="count"></app-number> Bottles
         </div>
     </div>
     <div class="container grow-item">

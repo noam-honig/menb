@@ -6,7 +6,6 @@ import { DialogService } from '../common/dialog';
 import { Roles } from './roles';
 import { GridSettings } from '@remult/angular';
 
-
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',

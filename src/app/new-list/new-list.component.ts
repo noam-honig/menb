@@ -21,7 +21,7 @@ export class NewListComponent implements OnInit, AfterViewInit {
     }
   })
   @Field<NewListComponent>({
-    caption: 'חפש בקבוק'
+    caption: 'bottle search'
   })
   searchString: string = '';
   get $() { return getFields(this) }

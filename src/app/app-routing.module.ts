@@ -14,13 +14,12 @@ import { NewListComponent } from './new-list/new-list.component';
 
 
 const routes: Routes = [
-  { path: 'Home', component: HomeComponent },
-  { path: 'בקבוקים', component: BottlesComponent, canActivate: [AuthenticatedInGuard] },
-  { path: 'הגדרות', component: ManageComponent, canActivate: [AdminGuard] },
-  { path: 'משתמשים', component: UsersComponent, canActivate: [AdminGuard] },
-  { path: 'הרשימה', component: NewListComponent, canActivate: [AdminGuard] },
-  { path: '', redirectTo: '/Home', pathMatch: 'full' },
-  { path: '**', redirectTo: '/Home', pathMatch: 'full' }
+  { path: 'home', component: NewListComponent },
+  { path: 'bottles', component: BottlesComponent, canActivate: [AuthenticatedInGuard] },
+  { path: 'Settings', component: ManageComponent, canActivate: [AdminGuard] },
+  { path: 'Users', component: UsersComponent, canActivate: [AdminGuard] },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '**', redirectTo: '/home', pathMatch: 'full' }
 
 ];
 

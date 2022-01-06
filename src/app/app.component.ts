@@ -48,6 +48,9 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
 
   }
+  isHome() {
+    return this.currentTitle()=="home";
+  }
 
   signOut() {
     this.auth.signOut();

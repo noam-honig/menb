@@ -5,7 +5,7 @@ import { ClassType } from 'remult/classType';
 import { Roles } from '../users/roles';
 
 
-function LookupTableDefs(key: string, caption: string) {
+function LookupTableDefs(key: string) {
     return (entity: ClassType<LookupTableBase>) => {
         // DataControl<{ remult: Remult }, LookupTableBase>({
         //     hideDataOnInput: true,
@@ -27,7 +27,6 @@ function LookupTableDefs(key: string, caption: string) {
             },
         })(entity);
         Entity(key, {
-            caption,
             defaultOrderBy: { name: "asc" },
             allowApiCrud: Roles.admin,
             allowApiRead: Allow.authenticated
@@ -43,17 +42,17 @@ export class LookupTableBase extends IdEntity {
 }
 
 
-@LookupTableDefs("Countries", "מדינות")
+@LookupTableDefs("Countries")
 export class Countries extends LookupTableBase { }
-@LookupTableDefs("Types", "סוג")
+@LookupTableDefs("Types")
 export class Types extends LookupTableBase { }
-@LookupTableDefs("BottleType", "סוג בקבוק")
+@LookupTableDefs("BottleType")
 export class BottleTypes extends LookupTableBase { }
-@LookupTableDefs("Shape", "צורה")
+@LookupTableDefs("Shape")
 export class Shapes extends LookupTableBase { }
-@LookupTableDefs("State", "מצב")
+@LookupTableDefs("State")
 export class States extends LookupTableBase { }
-@LookupTableDefs("Locations", "נמצא ב")
+@LookupTableDefs("Locations")
 export class Locations extends LookupTableBase { }
 
 declare module 'remult' {

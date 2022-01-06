@@ -31,7 +31,7 @@ export class BottlesComponent implements OnInit {
     }
   })
   @Field<BottlesComponent>({
-    caption: 'חפש בקבוק'
+    caption: 'bottle search'
   })
   searchString: string = '';
   get $() { return getFields(this) }
@@ -107,7 +107,7 @@ export class BottlesComponent implements OnInit {
       icon: 'delete',
 
       click: async (b) => {
-        if (await this.dialog.confirmDelete("בקבוק " + b.name)) {
+        if (await this.dialog.confirmDelete("Bottle " + b.name)) {
           await b.delete();
         }
       }

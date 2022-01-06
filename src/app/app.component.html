@@ -1,4 +1,8 @@
-<div style="height:100%;display:flex;flex-direction: column;">
+<div  style="height:100%" *ngIf="isHome()">
+  <router-outlet></router-outlet>
+</div>
+
+<div style="height:100%;display:flex;flex-direction: column;" *ngIf="!isHome()">
   <mat-toolbar color="primary" style="flex-shrink: 0;">
     <button mat-button class="sidenav-toggle" (click)="sidenav.toggle()">
       <mat-icon>menu</mat-icon>
@@ -18,7 +22,7 @@
     </ng-container>
   </mat-toolbar>
   <mat-sidenav-container class="app-sidenav-container">
-    <mat-sidenav #sidenav class="app-sidenav mat-elevation-z10 no-print" [opened]="!dialogService.isScreenSmall()"
+    <mat-sidenav #sidenav class="app-sidenav mat-elevation-z10 no-print" [opened]="false"
       [mode]="dialogService.isScreenSmall()?'over':'side'">
       <div style="width:100%;text-align: center">
 

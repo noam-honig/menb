@@ -7,14 +7,14 @@
     <data-control [field]="$.searchString" style="    flex-grow: 1;
     margin-left: 10px;"></data-control>
     <div>
-      <app-number [value]="bottles.totalRows"></app-number> בקבוקים
+      <app-number [value]="bottles.totalRows"></app-number> Bottles
     </div>
   </div>
   <mat-tab-group class="grow-item tab">
-    <mat-tab label="טבלה">
+    <mat-tab label="Table">
       <data-grid [settings]="bottles" class="grow-item"></data-grid>
     </mat-tab>
-    <mat-tab label="כרטיסים">
+    <mat-tab label="Cards">
       <div class="full-page" style="flex-direction: row;">
         <button mat-mini-fab #scrollStart (click)="prevPage(scrollEnd)" [class.hidden]="bottles.page==1"
           style="align-self:center">

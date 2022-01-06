@@ -5,7 +5,7 @@ import { Roles } from '../users/roles';
 
 @Entity<Bottles>(
     "Bottles", {
-    caption: "בקבוקים",
+    
     allowApiCrud: Roles.admin,
     allowApiRead: Allow.authenticated,
     defaultOrderBy: { name: "asc" },
@@ -18,52 +18,52 @@ export class Bottles extends IdEntity {
 
     images = new OneToMany(this.remult.repo(BottleImages), { where: { bottleId: this.id } });
 
-    @Field({ caption: "שם" })
+    @Field()
     name: string = '';
-    @Field({ caption: "יצרן" })
+    @Field()
     manufacturer: string = '';
 
-    @Field({ caption: "מדינה" })
+    @Field()
     country?: Countries;
 
 
-    @Field({ caption: "הערות" })
+    @Field()
     comments: string = '';
-    @Field({ caption: "סוג בקבוק" })
+    @Field()
     bottleType?: BottleTypes;
 
-    @Field({ caption: "צורה" })
+    @Field()
     shape?: Shapes;
 
-    @Field({ caption: "הערות לצורה" })
+    @Field()
     shapeComments: string = '';
 
-    @Field({ caption: "סוג" })
+    @Field()
     type?: Types;
-    @Field({ caption: "תת סוג" })
+    @Field()
     subType: string = '';
-    @Field({ caption: "כמות" })
+    @Field()
     quantity: number = 0;
 
-    @Field({ caption: "מצב" })
+    @Field()
     state?: States;
-    @Field({ caption: "נמצא ב" })
+    @Field()
     location?: Locations;
-    @Field({ caption: "אחוז אלכוהול" })
+    @Field()
     alcohol: number = 0;
-    @IntegerField({ caption: "נפח" })
+    @IntegerField()
     volume: number = 0;
-    @DateOnlyField({ caption: "תאריך כניסה לאוסף" })
+    @DateOnlyField()
     entryDate?: Date;
-    @Field({ caption: "הגיע מ" })
+    @Field()
     origin: string = '';
-    @Field({ caption: 'עלות' })
+    @Field()
     cost: number = 0;
-    @DateOnlyField({ caption: "תאריך הוצאה מהואסף" })
+    @DateOnlyField()
     exitDate?: Date;
-    @Field({ caption: "סיבה להוצאה מאוסף" })
+    @Field()
     exitReason: string = '';
-    @Field({ caption: "שווי" })
+    @Field()
     worth: number = 0;
     @Field({ allowApiUpdate: false })
     createDate?: Date;
