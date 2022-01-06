@@ -2,7 +2,7 @@
 .example-card {
     width:100%;
     @media (min-width: 720px) {
-    max-width: 200px;
+    max-width: 240px;
     }
   }
   
@@ -14,7 +14,7 @@
       display:flex;
       flex-flow: wrap;
       gap:8px;
-      justify-content: space-between;
+      padding:8px;
   }
   img{
       height:300px;

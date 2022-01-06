@@ -66,3 +66,13 @@ async function startup() {
     app.listen(port);
 }
 startup();
+
+/*
+* paging, repeats the same page all the time.
+* replace home with bottles.
+* search in type, country, name,manfacture,comment
+* space is and - in the search.
+* In the home lage, show latest bottles
+* make ltr 
+* make advanced search
+*/
