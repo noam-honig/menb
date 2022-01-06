@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Context, Entity, EntityType, IdEntity, ServerFunction, StringColumn } from '@remult/core';
+
+import { BackendMethod, FieldRef, Remult } from 'remult';
 
 import * as xlsx from 'xlsx';//https://sheetjs.com/
 import { DialogService } from '../common/dialog';
-import { BottleTypes, Countries, Shapes, Types } from '../manage/countries';
-import { Roles } from '../users/roles';
+import { BottleTypes, Countries, LookupTableBase, Shapes, Types } from '../manage/countries';
 import { Bottles } from './bottles';
 
 @Component({
@@ -16,7 +16,7 @@ import { Bottles } from './bottles';
     styles: []
 })
 export class ImportExcelComponent {
-    constructor(private context: Context, private dialog: DialogService, private matDialog: MatDialogRef<any>) {
+    constructor(private remult: Remult, private dialog: DialogService, private matDialog: MatDialogRef<any>) {
 
     }
 
@@ -38,7 +38,7 @@ export class ImportExcelComponent {
                     // call 'xlsx' to read the file
                     var oFile = xlsx.read(binary, { type: 'binary', cellDates: true, cellStyles: true });
                     let sheets = oFile.SheetNames;
-                    var dataArray = xlsx.utils.sheet_to_json(oFile.Sheets[sheets[0]], { header: 1 });
+                    var dataArray: any[][] = xlsx.utils.sheet_to_json(oFile.Sheets[sheets[0]], { header: 1 });
 
                     dataArray = dataArray.filter(x => x[0] || x[1] || x[2] || x[3]);
                     if (await this.dialog.yesNoQuestion("האם לקלוט " + dataArray.length + " בקבוקים?")) {
@@ -55,53 +55,52 @@ export class ImportExcelComponent {
         }
     }
 
-    @ServerFunction({ allowed: true })
-    static async ImportBottles(dataArray: any, context?: Context) {
+    @BackendMethod({ allowed: true })
+    static async ImportBottles(dataArray: any, remult?: Remult) {
         let i = 0;
         for (const row of dataArray) {
-            
-            
+
+
             i++;
             if (i == 1)
                 continue;
             var bottleName: string = row[xlsx.utils.decode_col("A")];
 
             //find existing product by name
-            let b = context.for(Bottles).create();
-            b.name.value = bottleName;
+            let b = remult!.repo(Bottles).create();
+            b.name = bottleName;
 
             let lookup = async (eType: {
-                new(...args: any[]): z;
-            }, dataCol: StringColumn, col: string) => {
+                new(...args: any[]): LookupTableBase;
+            }, dataCol: FieldRef<any, LookupTableBase | undefined> | undefined, col: string) => {
 
                 let val: string = row[xlsx.utils.decode_col(col)];
                 if (val && val.trim().length > 0) {
                     val = val.trim();
-                    let r = await context.for(eType).lookupAsync(x => x.name.isEqualTo(val));
+                    let r = await remult!.repo(eType).findFirst({ name: val }, {
+                        useCache: true
+                    });
                     if (r.isNew()) {
-                        r.name.value = val;
+                        r.name = val;
                         await r.save();
                     }
-                    dataCol.value = r.id.value;
+                    dataCol!.value = r;
                 }
             }
-            await lookup(Types, b.type, 'B');
-            b.manufacturer.value = row[xlsx.utils.decode_col("C")];
-            await lookup(Countries, b.country, 'D');
-            b.volume.value = +row[xlsx.utils.decode_col("E")];
-            b.alcohol.value = +row[xlsx.utils.decode_col("F")];
-            await lookup(BottleTypes, b.bottleType, 'G');
-            await lookup(Shapes, b.shape, 'H');
-            b.quantity.value = +row[xlsx.utils.decode_col("I")];
-            b.shapeComments.value = row[xlsx.utils.decode_col("J")];
-            b.comments.value = row[xlsx.utils.decode_col("K")];
+            await lookup(Types, b.$.type, 'B');
+            b.manufacturer = row[xlsx.utils.decode_col("C")];
+            await lookup(Countries, b.$.country, 'D');
+            b.volume = +row[xlsx.utils.decode_col("E")];
+            b.alcohol = +row[xlsx.utils.decode_col("F")];
+            await lookup(BottleTypes, b.$.bottleType, 'G');
+            await lookup(Shapes, b.$.shape, 'H');
+            b.quantity = +row[xlsx.utils.decode_col("I")];
+            b.shapeComments = row[xlsx.utils.decode_col("J")];
+            b.comments = row[xlsx.utils.decode_col("K")];
             await b.save();
 
         }
         return i;
     }
 
-}
-class z extends IdEntity {
-    name: StringColumn;
 }

@@ -1,0 +1,22 @@
+export const terms = {
+    username: "שם משתמש",
+    signIn: "כניסה",
+    confirmPassword: "אישור סיסמה",
+    signUp: "הרשמה",
+    doesNotMatchPassword: "סיסמה אינה תואמת",
+    password: 'סיסמה',
+    updateInfo: "עדכון פרטים",
+    changePassword: "עדכון סיסמה",
+    hello: "שלום",
+    invalidOperation: "פעולה שגויה",
+    admin: 'מנהל',
+    yes: 'כן',
+    no: 'לא',
+    ok: 'אשר',
+    areYouSureYouWouldLikeToDelete: "למחוק את ",
+    cancel: 'בטל',
+    home: 'בית',
+    userAccounts: 'משתמשים',
+    invalidSignIn: "פרטי כניסה שגויים",
+    signOut:'יציאה'
+}

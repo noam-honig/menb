@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { DataArealColumnSetting, DataAreaSettings, IDataAreaSettings } from '@remult/angular';
-import { getColumnsFromObject } from '@remult/core';
+import { DataAreaFieldsSetting, DataAreaSettings, IDataAreaSettings } from '@remult/angular';
+import { getFields } from 'remult';
+import { terms } from '../../terms';
+
 
 import { DialogService } from '../dialog';
 
@@ -13,10 +15,10 @@ import { DialogService } from '../dialog';
   styleUrls: ['./input-area.component.scss']
 })
 export class InputAreaComponent implements OnInit {
-  args: {
+  args!: {
     title: string,
     helpText?: string,
-    columnSettings?: () => DataArealColumnSetting<any>[];
+    fields?: () => DataAreaFieldsSetting<any>[];
     areaSettings?: IDataAreaSettings,
     object?: any,
     ok: () => void,
@@ -24,7 +26,7 @@ export class InputAreaComponent implements OnInit {
     validate?: () => Promise<void>,
     buttons?: button[]
   };
-
+  terms=terms;
   constructor(
     public dialogRef: MatDialogRef<any>,
     private dialog: DialogService
@@ -33,16 +35,16 @@ export class InputAreaComponent implements OnInit {
 
     dialogRef.afterClosed().toPromise().then(x => this.cancel());
   }
-  area: DataAreaSettings;
+  area!: DataAreaSettings;
 
   ngOnInit() {
     if (this.args.areaSettings)
-      this.area = new DataAreaSettings(this.args.areaSettings, null, null);
-    else if (this.args.columnSettings) {
-      this.area = new DataAreaSettings({ columnSettings: () => this.args.columnSettings() });
+      this.area = new DataAreaSettings(this.args.areaSettings, undefined, undefined);
+    else if (this.args.fields) {
+      this.area = new DataAreaSettings({ fields: () => this.args.fields!() });
     }
     else if (this.args.object) {
-      this.area = new DataAreaSettings({ columnSettings: () => getColumnsFromObject(this.args.object) })
+      this.area = new DataAreaSettings({ fields: () => [...getFields(this.args.object)] })
     }
   }
   cancel() {

@@ -8,8 +8,8 @@
                
                 <div style="text-align: center; min-height:200px;position: relative;">
 
-                    <img *ngIf="image" [src]="image.image.value" style="max-width:400px;width:100%;height:100%">
-                    <div [class.dontDisplay]="!inDrag&&this.image.image.value" style="position: absolute;
+                    <img *ngIf="image" [src]="image.image" style="max-width:400px;width:100%;height:100%">
+                    <div [class.dontDisplay]="!inDrag&&this.image.image" style="position: absolute;
                     top: 0px;
                     background-color: lightgray;
                     height: 100%;
@@ -40,13 +40,13 @@
                         </label>
                     </button>
 
-                    <button mat-icon-button [disabled]="imageIndex==0&&!image.image.value" (click)="deletePhoto()">
+                    <button mat-icon-button [disabled]="imageIndex==0&&!image.image" (click)="deletePhoto()">
                         <mat-icon>
                             delete
                         </mat-icon>
                     </button>
 
-                    <button mat-icon-button [disabled]="!image.image.value" (click)="addAPhoto()">
+                    <button mat-icon-button [disabled]="!image.image" (click)="addAPhoto()">
                         <mat-icon >
                             add_a_photo
                         </mat-icon>

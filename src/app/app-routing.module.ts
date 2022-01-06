@@ -1,19 +1,20 @@
-import { RemultModule, NotSignedInGuard, SignedInGuard } from '@remult/angular';
+import { AuthenticatedInGuard, RemultModule,  } from '@remult/angular';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 
 
 import { UsersComponent } from './users/users.component';
-import { Roles, AdminGuard } from './users/roles';
+import { Roles } from './users/roles';
 import { ShowDialogOnErrorErrorHandler } from './common/dialog';
 import { ManageComponent } from './manage/manage.component';
 import { BottlesComponent } from './bottles/bottles.component';
+import { AdminGuard } from './users/AdminGuard';
 
 
 const routes: Routes = [
   { path: 'Home', component: HomeComponent },
-  { path: 'בקבוקים', component: BottlesComponent, canActivate: [SignedInGuard] },
+  { path: 'בקבוקים', component: BottlesComponent, canActivate: [AuthenticatedInGuard] },
   { path: 'הגדרות', component: ManageComponent, canActivate: [AdminGuard] },
   { path: 'משתמשים', component: UsersComponent, canActivate: [AdminGuard] },
   { path: '', redirectTo: '/Home', pathMatch: 'full' },

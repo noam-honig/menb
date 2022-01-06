@@ -1,10 +1,11 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { MatTabsModule } from '@angular/material/tabs';
+import { BrowserModule } from '@angular/platform-browser';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -22,14 +23,12 @@ import { HomeComponent, RunningNumberComponent } from './home/home.component';
 import { YesNoQuestionComponent } from './common/yes-no-question/yes-no-question.component';
 import { InputAreaComponent } from './common/input-area/input-area.component';
 import { DialogService } from './common/dialog';
-import { AdminGuard } from './users/roles';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AdminGuard } from "./users/AdminGuard";
 import { ManageComponent } from './manage/manage.component';
 import { BottlesComponent } from './bottles/bottles.component';
 import { BottleInfoComponent } from './bottle-info/bottle-info.component';
-import { ChartsModule } from 'ng2-charts';
-import { ImportExcelComponent } from './bottles/import-excel.component';
-import { UploadImageComponent } from './bottles/upload-image.component';
+import { JwtModule } from '@auth0/angular-jwt';
+import { AuthService } from './auth.service';
 
 @NgModule({
   declarations: [
@@ -40,10 +39,8 @@ import { UploadImageComponent } from './bottles/upload-image.component';
     InputAreaComponent,
     ManageComponent,
     BottlesComponent,
-    BottleInfoComponent,
-    ImportExcelComponent,
-    UploadImageComponent,
-    RunningNumberComponent
+    RunningNumberComponent,
+    BottleInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -63,12 +60,14 @@ import { UploadImageComponent } from './bottles/upload-image.component';
     MatMenuModule,
     RemultModule,
     MatTabsModule,
-    ChartsModule,
-    BrowserAnimationsModule
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: () => AuthService.fromStorage()
+      }
+    })
   ],
   providers: [DialogService, AdminGuard],
   bootstrap: [AppComponent],
-  entryComponents: [YesNoQuestionComponent, InputAreaComponent, BottleInfoComponent,
-    ImportExcelComponent, UploadImageComponent]
+  entryComponents: [YesNoQuestionComponent, InputAreaComponent]
 })
 export class AppModule { }

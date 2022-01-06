@@ -1,23 +1,21 @@
-import { Component, Injector, ViewChild } from '@angular/core';
-import { Router, Route, CanActivate, ActivatedRoute } from '@angular/router';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router, Route, ActivatedRoute } from '@angular/router';
 import { MatSidenav } from '@angular/material/sidenav';
-import { MatDialog } from '@angular/material/dialog';
-
-import { Context, JwtSessionService, ServerFunction, StringColumn, UserInfo } from '@remult/core';
-
+import { Remult } from 'remult';
 import { DialogService } from './common/dialog';
-import { openDialog, RouteHelperService } from '@remult/angular';
-import { PasswordColumn, Users } from './users/users';
-import { Roles } from './users/roles';
+import { InputField, openDialog, RouteHelperService } from '@remult/angular';
+import { Users } from './users/users';
+import { PasswordControl } from "./users/PasswordControl";
 import { InputAreaComponent } from './common/input-area/input-area.component';
-import { async } from '@angular/core/testing';
+import { AuthService } from './auth.service';
+import { terms } from './terms';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
 
   constructor(
@@ -25,104 +23,88 @@ export class AppComponent {
     public activeRoute: ActivatedRoute,
     private routeHelper: RouteHelperService,
     public dialogService: DialogService,
-    private session: JwtSessionService,
-    public context: Context) {
+    public remult: Remult,
+    public auth: AuthService) {
 
-    session.loadUserInfo();
+
   }
+  terms = terms;
 
   async signIn() {
-    let user = new StringColumn({ caption: "שם" });
-    let password = new PasswordColumn();
+    let user = new InputField<string>({ caption: terms.username });
+    let password = new PasswordControl();
     openDialog(InputAreaComponent, i => i.args = {
-      title: "כניסה",
-      columnSettings: () => [
+      title: terms.signIn,
+      fields: () => [
         user,
         password
       ],
       ok: async () => {
-        this.session.setToken(await AppComponent.signIn(user.value, password.value));
+        this.auth.signIn(user.value, password.value);
       }
     });
   }
-  @ServerFunction({ allowed: true })
-  static async signIn(user: string, password: string, context?: Context) {
-    let result: UserInfo;
-    let u = await context.for(Users).findFirst(h => h.name.isEqualTo(user));
-    if (u)
-      if (!u.password.value || PasswordColumn.passwordHelper.verify(password, u.password.value)) {
-        result = {
-          id: u.id.value,
-          roles: [],
-          name: u.name.value
-        };
-        if (u.admin.value) {
-          result.roles.push(Roles.admin);
-        }
-      }
 
-    if (result) {
-      return JwtSessionService.createTokenOnServer(result);
-    }
-    throw new Error("Invalid Sign In Info");
+  ngOnInit(): void {
+
   }
 
   signOut() {
-    this.session.signout();
+    this.auth.signOut();
     this.router.navigate(['/']);
   }
   signUp() {
-    let user = this.context.for(Users).create();
-    let password = new PasswordColumn();
-    let confirmPassword = new PasswordColumn({ caption: "אישור סיסמה" });
+    let user = this.remult.repo(Users).create();
+    let password = new PasswordControl();
+    let confirmPassword = new PasswordControl(terms.confirmPassword);
     openDialog(InputAreaComponent, i => i.args = {
-      title: "הרשמה",
-      columnSettings: () => [
-        user.name,
+      title: terms.signUp,
+      fields: () => [
+        user.$.name,
         password,
         confirmPassword
       ],
       ok: async () => {
         if (password.value != confirmPassword.value) {
-          confirmPassword.validationError = "לא תואם את הסיסמה";
-          throw new Error(confirmPassword.defs.caption + " " + confirmPassword.validationError);
+          confirmPassword.error = terms.doesNotMatchPassword;
+          throw new Error(confirmPassword.metadata.caption + " " + confirmPassword.error);
         }
         await user.create(password.value);
-        this.session.setToken(await AppComponent.signIn(user.name.value, password.value));
+        this.auth.signIn(user.name, password.value);
 
       }
     });
   }
 
   async updateInfo() {
-    let user = await this.context.for(Users).findId(this.context.user.id);
+    let user = await this.remult.repo(Users).findId(this.remult.user.id);
     openDialog(InputAreaComponent, i => i.args = {
-      title: "עדכון פרטים",
-      columnSettings: () => [
-        user.name
+      title: terms.updateInfo,
+      fields: () => [
+        user.$.name
       ],
       ok: async () => {
-        await user.save();
+        await user._.save();
       }
     });
   }
   async changePassword() {
-    let user = await this.context.for(Users).findId(this.context.user.id);
-    let password = new PasswordColumn();
-    let confirmPassword = new PasswordColumn({ caption: "אישור סיסמה" });
+    let user = await this.remult.repo(Users).findId(this.remult.user.id);
+    let password = new PasswordControl();
+    let confirmPassword = new PasswordControl(terms.confirmPassword);
     openDialog(InputAreaComponent, i => i.args = {
-      title: "שנה סיסמה",
-      columnSettings: () => [
+      title: terms.changePassword,
+      fields: () => [
         password,
         confirmPassword
       ],
       ok: async () => {
         if (password.value != confirmPassword.value) {
-          confirmPassword.validationError = "לא תואם את הסיסמה";
-          throw new Error(confirmPassword.defs.caption + " " + confirmPassword.validationError);
+          confirmPassword.error = terms.doesNotMatchPassword;
+          throw new Error(confirmPassword.metadata.caption + " " + confirmPassword.error);
         }
         await user.updatePassword(password.value);
-        await user.save();
+        await user._.save();
       }
     });
 
@@ -130,26 +112,21 @@ export class AppComponent {
 
   routeName(route: Route) {
     let name = route.path;
-    if (route.data && route.data.name)
-      name = route.data.name;
+    if (route.data && route.data['name'])
+      name = route.data['name'];
     return name;
   }
 
   currentTitle() {
-    if (this.activeRoute && this.activeRoute.snapshot && this.activeRoute.firstChild)
-      if (this.activeRoute.firstChild.data && this.activeRoute.snapshot.firstChild.data.name) {
-        return this.activeRoute.snapshot.firstChild.data.name;
+    if (this.activeRoute!.snapshot && this.activeRoute!.firstChild)
+      if (this.activeRoute.snapshot.firstChild!.data!['name']) {
+        return this.activeRoute.snapshot.firstChild!.data['name'];
       }
       else {
         if (this.activeRoute.firstChild.routeConfig)
           return this.activeRoute.firstChild.routeConfig.path;
       }
-    return 'הבקבוקים של מנחם';
-  }
-  isHome() {
-    if (this.activeRoute && this.activeRoute.firstChild && this.activeRoute.firstChild.routeConfig.path == 'Home')
-      return true;
-    return false;
+    return 'men-collection';
   }
 
   shouldDisplayRoute(route: Route) {

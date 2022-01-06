@@ -4,7 +4,7 @@
   
   justify-content: space-between;
   align-items: center;">
-    <data-control [column]="searchString" style="    flex-grow: 1;
+    <data-control [field]="$.searchString" style="    flex-grow: 1;
     margin-left: 10px;"></data-control>
     <div>
       <app-number [value]="bottles.totalRows"></app-number> בקבוקים
@@ -30,19 +30,19 @@
                   <mat-icon>edit</mat-icon>
                 </button>
               </div>
-              <mat-card-title>{{b.name.value}}</mat-card-title>
-              <mat-card-subtitle>{{b.manufacturer.value}} - {{b.country.displayValue}}</mat-card-subtitle>
+              <mat-card-title>{{b.name}}</mat-card-title>
+              <mat-card-subtitle>{{b.manufacturer}} - {{b.country?.name}}</mat-card-subtitle>
             </mat-card-header>
 
             <div class="grow-item">
               <div class="full-page">
                 <div class="grow-item" style="overflow-y: hidden;overflow-x: hidden;">
-                  <img mat-card-image src="/api/images/{{b.id.value}}?{{b.imageReloadVersion}}" alt=""
+                  <img mat-card-image src="/api/images/{{b.id}}?{{b.imageReloadVersion}}" alt=""
                     style="max-height: 100%;max-width: 100%;object-fit: contain;margin: 0%;">
                 </div>
 
                 <p>
-                  {{b.comments.value}}
+                  {{b.comments}}
                 </p>
               </div>
             </div>

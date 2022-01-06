@@ -1,19 +1,20 @@
 import { Component, isDevMode, OnInit } from '@angular/core';
-import { Context, StringColumn } from '@remult/core';
-import { Bottles, LookupColumn } from './bottles';
-import { BottleInfoComponent } from '../bottle-info/bottle-info.component';
+import { Bottles } from './bottles';
+import { BottleInfoComponent, mapFieldType } from '../bottle-info/bottle-info.component';
 import { ChartType, ChartOptions } from 'chart.js';
-import { Countries } from '../manage/countries';
+import { Countries, LookupTableBase } from '../manage/countries';
 import { MatPseudoCheckbox } from '@angular/material/core';
 import { ImportExcelComponent } from './import-excel.component';
 import { DialogService } from '../common/dialog';
 import { columnOrderAndWidthSaver } from '../common/columnOrderAndWidthSaver';
 import { UploadImageComponent } from './upload-image.component';
-import { BusyService, openDialog } from '@remult/angular';
+import { BusyService, DataControl, DataControlSettings, openDialog, SelectValueDialogComponent } from '@remult/angular';
 import * as xlsx from 'xlsx';
 
 import { GridSettings } from '@remult/angular';
 import { MatButton } from '@angular/material/button';
+import { Field, FieldMetadata, FieldRef, getFields, Remult } from 'remult';
+import { ClassType } from 'remult/classType';
 
 @Component({
   selector: 'app-bottles',
@@ -22,20 +23,23 @@ import { MatButton } from '@angular/material/button';
 })
 export class BottlesComponent implements OnInit {
 
-  constructor(private context: Context, private dialog: DialogService, private busy: BusyService) { }
-  searchString = new StringColumn({
-    caption: 'חפש בקבוק',
-    valueChange: async () => {
+  constructor(private remult: Remult, private dialog: DialogService, private busy: BusyService) { }
+  @DataControl<BottlesComponent>({
+    valueChange: async (self) => {
       // the call to `this.busy.donotWait` causes the load products method to run without the "Busy" circle in the ui
-      await this.busy.donotWait(async () => await this.bottles.reloadData());
+      await self.busy.donotWait(async () => await self.bottles.reloadData());
     }
   })
+  @Field<BottlesComponent>({
+    caption: 'חפש בקבוק'
+  })
+  searchString: string = '';
+  get $() { return getFields(this) }
 
-  bottles = new GridSettings(this.context.for(Bottles), {
+  bottles = new GridSettings(this.remult.repo(Bottles), {
     knowTotalRows: true,
-    allowCRUD: true,
+    allowCrud: true,
     allowDelete: false,
-    showFilter: true,
 
     gridButtons: [{
       name: 'קליטה מאקסל',
@@ -49,14 +53,10 @@ export class BottlesComponent implements OnInit {
       click: async () => {
         let result = [];
 
-        for await (const p of this.context.for(Bottles).iterate(this.bottles.getFilterWithSelectedRows())) {
-          let item = {};
-          for (const col of p.columns) {
-            item[col.defs.caption] = col.value;
-            if (col instanceof LookupColumn) {
-              await col.waitLoad();
-              item[col.defs.caption] = col.displayValue;
-            }
+        for await (const p of this.remult.repo(Bottles).query(await this.bottles.getFilterWithSelectedRows())) {
+          let item: any = {};
+          for (const col of p.$) {
+            item[col.metadata.caption] = col.displayValue;
           }
           result.push(item);
         }
@@ -70,13 +70,15 @@ export class BottlesComponent implements OnInit {
       this.edit(bottle);
 
     },
-    where: p =>
-      // if there is a search value, search by it
-      this.searchString.value ? p.name.contains(this.searchString).or(p.manufacturer.contains(this.searchString))
-        : undefined
+    where: () => ({
+      $or: [
+        { name: { $contains: this.searchString } },
+        { manufacturer: { $contains: this.searchString } }
+      ]
+    })
     ,
     columnSettings: (b) => [
-      ...b.columns.toArray().filter(x => x != b.id)
+      ...b.toArray().filter(x => x != b.id).map(mapFieldType)
     ],
     numOfColumnsInGrid: 3,
     rowButtons: [{
@@ -93,8 +95,8 @@ export class BottlesComponent implements OnInit {
       click: async (b) => {
         this.bottles.addNewRow();
         let newb = this.bottles.currentRow;
-        for (const col of b.columns) {
-          newb.columns.find(col).value = col.value;
+        for (const col of b.$) {
+          newb.$.find(col.metadata).value = col.value;
         }
         this.edit(newb);
 
@@ -105,7 +107,7 @@ export class BottlesComponent implements OnInit {
       icon: 'delete',
 
       click: async (b) => {
-        if (await this.dialog.confirmDelete("בקבוק " + b.name.value)) {
+        if (await this.dialog.confirmDelete("בקבוק " + b.name)) {
           await b.delete();
         }
       }
@@ -128,8 +130,8 @@ export class BottlesComponent implements OnInit {
 
   prevPage(x: MatButton) {
 
- 
-    this.bottles.previousPage().then(() =>{
+
+    this.bottles.previousPage().then(() => {
       var e = x._elementRef.nativeElement;
       e.scrollIntoView({ behavior: 'smooth' });
       setTimeout(() => {
@@ -147,7 +149,7 @@ export class BottlesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.prepareChart();
+
     this.columnSaver.load('bottles');
     if (false)
       setTimeout(() => {
@@ -157,52 +159,6 @@ export class BottlesComponent implements OnInit {
       }, 1500);
   }
 
-  async prepareChart() {
-    return;
-    this.pieChartLabels.splice(0);
-    this.pieChartData.splice(0);
-    let map = new Map<string, number>();
-    for await (let b of this.context.for(Bottles).iterate()) {
-      let c = await this.context.for(Countries).lookupAsync(b.country);
-      let val = map.get(c.name.value);
-      if (val == undefined)
-        val = 0;
-      val++;
-      map.set(c.name.value, val);
 
-
-    }
-    if ([...map.keys()].length == 0) {
-      map.set('', 1);
-    }
-    this.pieChartLabels.push(...map.keys());
-    this.pieChartData = [...map.values()];
-
-  }
-
-  public pieChartOptions: ChartOptions = {
-    responsive: true,
-    legend: {
-      position: 'top',
-    },
-    plugins: {
-      datalabels: {
-        formatter: (value, ctx) => {
-          const label = ctx.chart.data.labels[ctx.dataIndex];
-          return label;
-        },
-      },
-    }
-  };
-  public pieChartLabels = ["noam", "yael", "ilan"];
-  public pieChartData: number[] = [300, 500, 100];
-  public pieChartType: ChartType = 'pie';
-  public pieChartLegend = true;
-
-  public pieChartColors = [
-    {
-      backgroundColor: ['rgba(255,0,0,0.3)', 'rgba(0,255,0,0.3)', 'rgba(0,0,255,0.3)'],
-    },
-  ];
 
 }

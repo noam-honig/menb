@@ -1,110 +1,108 @@
-import { EntityClass, IdEntity, StringColumn, NumberColumn, DateColumn, Context, DateTimeColumn, IdColumn, BoolColumn, Entity, SpecificEntityHelper, LookupColumn as RemultLookupColumn, OneToMany } from '@remult/core';
-import { extend, getValueList, openDialog, SelectValueDialogComponent } from '@remult/angular';
-import { SqlBuilder } from '../common/sql-builder';
+import { IdEntity, Entity, OneToMany, Field, DateOnlyField, IntegerField, Remult, Allow } from 'remult';
+
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
 import { Roles } from '../users/roles';
 
-@EntityClass
+@Entity<Bottles>(
+    "Bottles", {
+    caption: "בקבוקים",
+    allowApiCrud: Roles.admin,
+    allowApiRead: Allow.authenticated,
+    defaultOrderBy: { name: "asc" },
+    saving: (self) => {
+        if (self.isNew())
+            self.createDate = new Date();
+    }
+})
 export class Bottles extends IdEntity {
-    
-    images = new OneToMany(this.context.for(BottleImages),{where:b=>b.bottleId.isEqualTo(this.id)})
 
-    name = new StringColumn({ caption: "שם" });
-    manufacturer = new StringColumn({ caption: "יצרן" });
-    country = new LookupColumn(this.context.for(Countries), "מדינה");
+    images = new OneToMany(this.remult.repo(BottleImages), { where: { bottleId: this.id } });
+
+    @Field({ caption: "שם" })
+    name: string = '';
+    @Field({ caption: "יצרן" })
+    manufacturer: string = '';
+
+    @Field({ caption: "מדינה" })
+    country?: Countries;
 
 
-    comments = new StringColumn({ caption: "הערות" });
-    bottleType = new LookupColumn(this.context.for(BottleTypes), "סוג בקבוק");
+    @Field({ caption: "הערות" })
+    comments: string = '';
+    @Field({ caption: "סוג בקבוק" })
+    bottleType?: BottleTypes;
 
-    shape = new LookupColumn(this.context.for(Shapes), "צורה");
+    @Field({ caption: "צורה" })
+    shape?: Shapes;
 
-    shapeComments = new StringColumn({ caption: "הערות לצורה" });
-    type = new LookupColumn(this.context.for(Types), "סוג");
-    subType = new StringColumn({ caption: "תת סוג" });
-    quantity = new NumberColumn({ caption: "כמות" });
-    state = new LookupColumn(this.context.for(States), "מצב");
-    location = new LookupColumn(this.context.for(Locations), "נמצא ב");
-    alcohol = new NumberColumn({ caption: "אחוז אלכוהול", decimalDigits: 2 });
-    volume = new NumberColumn({ caption: "נפח" });
+    @Field({ caption: "הערות לצורה" })
+    shapeComments: string = '';
 
-    entryDate = new DateColumn({ caption: "תאריך כניסה לאוסף" });
-    origin = new StringColumn({ caption: "הגיע מ" });
-    cost = new NumberColumn({ decimalDigits: 2, caption: 'עלות' });
-    exitDate = new DateColumn({ caption: "תאריך הוצאה מהואסף" });
-    exitReason = new StringColumn({ caption: "סיבה להוצאה מאוסף" });
-    worth = new NumberColumn({ caption: "שווי", decimalDigits: 2 });
-    createDate = new DateTimeColumn({ allowApiUpdate: false });
-    hasImage = extend(new BoolColumn({
+    @Field({ caption: "סוג" })
+    type?: Types;
+    @Field({ caption: "תת סוג" })
+    subType: string = '';
+    @Field({ caption: "כמות" })
+    quantity: number = 0;
+
+    @Field({ caption: "מצב" })
+    state?: States;
+    @Field({ caption: "נמצא ב" })
+    location?: Locations;
+    @Field({ caption: "אחוז אלכוהול" })
+    alcohol: number = 0;
+    @IntegerField({ caption: "נפח" })
+    volume: number = 0;
+    @DateOnlyField({ caption: "תאריך כניסה לאוסף" })
+    entryDate?: Date;
+    @Field({ caption: "הגיע מ" })
+    origin: string = '';
+    @Field({ caption: 'עלות' })
+    cost: number = 0;
+    @DateOnlyField({ caption: "תאריך הוצאה מהואסף" })
+    exitDate?: Date;
+    @Field({ caption: "סיבה להוצאה מאוסף" })
+    exitReason: string = '';
+    @Field({ caption: "שווי" })
+    worth: number = 0;
+    @Field({ allowApiUpdate: false })
+    createDate?: Date;
+    // @DataControl({
+    //     width: '60',
+    //     readonly: true
+    // })
+    @Field<Bottles>({
+
         caption: 'תמונה',
-        sqlExpression: () => {
-            var bi = this.context.for(BottleImages).create();
-            var sql = new SqlBuilder();
-            sql.addEntity(this, "Bottles");
-            return '(' + sql.query({ select: () => ["count(*)>0 hasImage"], from: bi, where: () => [sql.eq(bi.bottleId, this.id)] }) + ')';
-        }
-    })).dataControl(s => {
-        s.width = '60';
-        s.getValue = () => '';
-        s.readOnly = true;
-    })
+    }, (options, remult) => options.sqlExpression = async (self) => {
+        var bi = remult.repo(BottleImages).metadata;
+        return `( select count(*)>0 hasImage from ${await bi.getDbName()} where ${await bi.fields.bottleId.getDbName()} =${await bi.getDbName()}.${await self.fields.id.getDbName()} )`;
+    }
+    )
+    hasImage: boolean = false;
+
+
 
     imageReloadVersion = 0;
-    constructor(private context: Context) {
-        super({
-            name: "Bottles",
-            caption: "בקבוקים",
-            allowApiCRUD: Roles.admin,
-            allowApiRead: context => context.isSignedIn(),
-            defaultOrderBy: () => this.name,
-            saving: () => {
-                if (this.isNew())
-                    this.createDate.value = new Date();
-            }
-        });
+    constructor(public remult: Remult) {
+        super();
     }
 }
 
-@EntityClass
+@Entity('bottleImages', {
+    allowApiCrud: Roles.admin,
+    allowApiRead: Allow.authenticated,
+    defaultOrderBy: { num: "asc" },
+})
 export class BottleImages extends IdEntity {
-    bottleId = new IdColumn();
-    image = new StringColumn();
-    fileName = new StringColumn();
-    num = new NumberColumn();
-    constructor(context: Context) {
-        super({
-            name: 'bottleImages',
-            allowApiCRUD: Roles.admin,
-            allowApiRead: context => context.isSignedIn(),
-            defaultOrderBy:()=>this.num,
-            saving: async () => {
-               
-            }
-        });
-    }
-}
-export class LookupColumn<T extends lookupEntity> extends RemultLookupColumn<T> {
-    constructor(provider: SpecificEntityHelper<string, T>, caption: string) {
-        super(provider, {
-            displayValue: () => this.item.name.value,
-            caption
-        });
-        extend(this).dataControl(s => {
-            s.getValue = () => this.displayValue;
-            s.hideDataOnInput = true;
-            s.click = async () => {
-
-                openDialog(SelectValueDialogComponent, async x => x.args({
-                    values: await getValueList(provider),
-                    onSelect: (x) => this.value = x.id
-                }));
-            }
-        });
-    }
+    @Field()
+    bottleId: string = '';
+    @Field()
+    image: string = '';
+    @Field()
+    fileName: string = '';
+    @IntegerField()
+    num: number = 0;
 
 
 }
-interface lookupEntity extends IdEntity {
-    name: StringColumn;
-}
-

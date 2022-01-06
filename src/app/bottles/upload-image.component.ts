@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { BusyService } from '@remult/angular';
-import { Context, ServerFunction } from '@remult/core';
+import { Remult } from 'remult';
 import { DialogService } from '../common/dialog';
 import { BottleImages } from './bottles';
 
@@ -13,11 +13,11 @@ import { BottleImages } from './bottles';
 })
 export class UploadImageComponent implements OnInit {
 
-    constructor(private context: Context,
+    constructor(private remult:Remult,
         private busy: BusyService,
         private dialog: DialogService,
         private matDialog: MatDialogRef<any>) { }
-    args: {
+    args!: {
         bottleId: string,
         afterUpload: (image: string, fileName: string) => void
     }
@@ -35,39 +35,39 @@ export class UploadImageComponent implements OnInit {
                     var img = new Image();
 
                     var canvas = document.createElement("canvas");
-                    if (false) {
-                        img.onload = async () => {
-                            var ctx = canvas.getContext("2d");
-                            ctx.drawImage(img, 0, 0);
+                    // if (false) {
+                    //     img.onload = async () => {
+                    //         var ctx = canvas.getContext("2d");
+                    //         ctx.drawImage(img, 0, 0);
 
-                            var MAX_WIDTH = 300;
-                            var MAX_HEIGHT = 500;
-                            var width = img.width;
-                            var height = img.height;
+                    //         var MAX_WIDTH = 300;
+                    //         var MAX_HEIGHT = 500;
+                    //         var width = img.width;
+                    //         var height = img.height;
 
-                            if (width > height) {
-                                if (width > MAX_WIDTH) {
-                                    height *= MAX_WIDTH / width;
-                                    width = MAX_WIDTH;
-                                }
-                            } else {
-                                if (height > MAX_HEIGHT) {
-                                    width *= MAX_HEIGHT / height;
-                                    height = MAX_HEIGHT;
-                                }
-                            }
-                            canvas.width = width;
-                            canvas.height = height;
-                            var ctx = canvas.getContext("2d");
-                            ctx.drawImage(img, 0, 0, width, height);
+                    //         if (width > height) {
+                    //             if (width > MAX_WIDTH) {
+                    //                 height *= MAX_WIDTH / width;
+                    //                 width = MAX_WIDTH;
+                    //             }
+                    //         } else {
+                    //             if (height > MAX_HEIGHT) {
+                    //                 width *= MAX_HEIGHT / height;
+                    //                 height = MAX_HEIGHT;
+                    //             }
+                    //         }
+                    //         canvas.width = width;
+                    //         canvas.height = height;
+                    //         var ctx = canvas.getContext("2d");
+                    //         ctx.drawImage(img, 0, 0, width, height);
 
-                            var dataurl = canvas.toDataURL("image/png");
+                    //         var dataurl = canvas.toDataURL("image/png");
 
-                            this.args.afterUpload(dataurl, f.name);
-                            this.matDialog.close();
-                        }
-                        img.src = e.target.result.toString();
-                    }
+                    //         this.args.afterUpload(dataurl, f.name);
+                    //         this.matDialog.close();
+                    //     }
+                    //     img.src = e.target.result.toString();
+                    // }
                     this.args.afterUpload(e.target.result.toString(), f.name);
                     this.matDialog.close();
 

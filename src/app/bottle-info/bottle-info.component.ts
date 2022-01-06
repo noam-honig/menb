@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { BottleImages, Bottles } from '../bottles/bottles';
-import { Context } from '@remult/core';
+
 import { MatDialogRef } from '@angular/material/dialog';
 import { UploadImageComponent } from '../bottles/upload-image.component';
-import { openDialog, DataAreaSettings } from '@remult/angular';
+import { openDialog, DataAreaSettings, SelectValueDialogComponent, DataControlSettings } from '@remult/angular';
+import { FieldMetadata, FieldRef, Remult } from 'remult';
 
 @Component({
   selector: 'app-bottle-info',
@@ -12,13 +13,13 @@ import { openDialog, DataAreaSettings } from '@remult/angular';
 })
 export class BottleInfoComponent implements OnInit {
 
-  constructor(private dialog: MatDialogRef<any>, private context: Context) {
+  constructor(private dialog: MatDialogRef<any>, private remult: Remult) {
     dialog.afterClosed().subscribe(() => {
       if (this.saved)
-        this.args.bottle.undoChanges();
+        this.args.bottle._.undoChanges();
     });
   }
-  args: {
+  args!: {
     bottle: Bottles
   }
   images: BottleImages[] = [];
@@ -42,7 +43,7 @@ export class BottleInfoComponent implements OnInit {
   addAPhoto() {
     this.images.push(this.args.bottle.images.create());
     this.imageIndex = this.images.length - 1;
-    this.image.num.value = this.images.length;
+    this.image.num = this.images.length;
   }
   deletePhoto() {
     this.toDeleteImages.push(this.image);
@@ -50,19 +51,19 @@ export class BottleInfoComponent implements OnInit {
     if (this.imageIndex >= this.images.length)
       this.imageIndex = this.images.length - 1;
   }
-  toDeleteImages: BottleImages[]=[];
-  rightArea: DataAreaSettings;
-  leftArea: DataAreaSettings;
-  bottomArea: DataAreaSettings;
+  toDeleteImages: BottleImages[] = [];
+  rightArea!: DataAreaSettings;
+  leftArea!: DataAreaSettings;
+  bottomArea!: DataAreaSettings;
   ngOnInit() {
-    let b = this.args.bottle;
+    let b = this.args.bottle.$;
     this.rightArea = new DataAreaSettings({
-      columnSettings: () => [
-        b.country,
+      fields: (_) => [
+        mapFieldType(b.country!),
         b.name,
-        b.manufacturer,
+        mapFieldType(b.manufacturer!),
         b.comments,
-        [b.bottleType, b.shape],
+        [b.bottleType!, b.shape!].map(mapFieldType),
         b.shapeComments,
         [b.alcohol, b.volume],
 
@@ -70,30 +71,25 @@ export class BottleInfoComponent implements OnInit {
       ]
     });
     this.leftArea = new DataAreaSettings({
-      columnSettings: () => [
-
-
-        [b.type,
-        b.subType],
-        b.quantity,
-
-
+      fields: () => [
+        [b.type!,
+        b.subType!].map(mapFieldType),
+        b.quantity
       ]
     });
     this.bottomArea = new DataAreaSettings({
-      columnSettings: () => [
-
-        b.state,
-        b.location,
-        [b.entryDate, b.origin],
+      fields: () => [
+        b.state!,
+        b.location!,
+        [b.entryDate!, b.origin],
         [b.cost, b.worth],
-        [b.exitDate, b.exitReason]
+        [b.exitDate!, b.exitReason]
 
       ]
     });
     if (!this.args.bottle.isNew()) {
-      this.args.bottle.reload();
-      this.args.bottle.images.reload().then(x => {
+      this.args.bottle._.reload();
+      this.remult.repo(BottleImages).find({ where: { bottleId: this.args.bottle.id } }).then(x => {
         this.images = x;
       });
     }
@@ -103,8 +99,8 @@ export class BottleInfoComponent implements OnInit {
   async save() {
     await this.args.bottle.save();
     for (const i of this.images) {
-      if (i.image.wasChanged()) {
-        i.bottleId.value = this.args.bottle.id.value;
+      if (i.$.image.valueChanged()) {
+        i.bottleId = this.args.bottle.id;
         await i.save();
         this.saved = true;
       }
@@ -121,22 +117,22 @@ export class BottleInfoComponent implements OnInit {
     if (this.args.bottle.isNew())
       await this.args.bottle.save();
     await openDialog(UploadImageComponent, x => x.args = {
-      bottleId: this.args.bottle.id.value
+      bottleId: this.args.bottle.id
       ,
       afterUpload: (image, fileName) => {
-        this.image.image.value = image;
-        this.image.fileName.value = fileName;
+        this.image.image = image;
+        this.image.fileName = fileName;
       }
     });
   }
   openImage() {
-    if (this.image.image.value) {
+    if (this.image.image) {
       var image = new Image();
-      image.src = this.image.image.value;;
-      image.style.height='100%';
+      image.src = this.image.image;;
+      image.style.height = '100%';
 
       var w = window.open("");
-      w.document.write(image.outerHTML);
+      w!.document.write(image.outerHTML);
     }
   }
   async dropFile(e: DragEvent) {
@@ -144,7 +140,7 @@ export class BottleInfoComponent implements OnInit {
     e.preventDefault();
     e.stopPropagation();
     this.inDrag = false;
-    await this.loadFiles(e.dataTransfer.files);
+    await this.loadFiles(e?.dataTransfer?.files);
 
   }
   private async loadFiles(files: any) {
@@ -155,8 +151,8 @@ export class BottleInfoComponent implements OnInit {
         var fileReader = new FileReader();
 
         fileReader.onload = async (e: any) => {
-          this.image.image.value = e.target.result.toString();
-          this.image.fileName.value = f.name;
+          this.image.image = e.target.result.toString();
+          this.image.fileName = f.name;
           res({});
 
         };
@@ -186,4 +182,25 @@ export class BottleInfoComponent implements OnInit {
 
   }
 
+}
+export function mapFieldType(field: FieldMetadata | FieldRef | FieldRef[]) {
+  let meta: FieldMetadata = (field as FieldRef).metadata;
+  if (!meta)
+    meta = field as FieldMetadata;
+
+
+  if (meta.options.selectType) {
+    return {
+      field: field,
+      hideDataOnInput: true,
+      getValue: (_, x) => x.value?.name,
+      click: async (row: { remult: Remult }, col) => {
+        openDialog(SelectValueDialogComponent, async x => x.args({
+          values: (await row.remult.repo(meta.options.selectType!).find()).map(item => ({ caption: item.name, item })),
+          onSelect: (x) => col.value = x.item
+        }));
+      }
+    } as DataControlSettings
+  }
+  return meta;
 }

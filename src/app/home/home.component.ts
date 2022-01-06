@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Context, ServerFunction, SqlDatabase } from '@remult/core';
+import { BackendMethod, Remult, SqlDatabase } from 'remult';
+
 import { Bottles } from '../bottles/bottles';
-import { SqlBuilder } from '../common/sql-builder';
+
 
 @Component({
   selector: 'app-home',
@@ -20,14 +21,14 @@ export class HomeComponent implements OnInit {
       this.countries = x.countries;
     });
   }
-  @ServerFunction({ allowed: true })
-  static async stats(context?: Context, db?: SqlDatabase) {
-    var sql = new SqlBuilder();
-    var b = context.for(Bottles).create();
+  @BackendMethod({ allowed: true })
+  static async stats(remult?: Remult, db?: SqlDatabase) {
+
+    var b = remult!.repo(Bottles).metadata;
 
     return {
-      count: await context.for(Bottles).count(),
-      countries: (await db.execute(sql.query({ select: () => [sql.build("count (distinct ", b.country, ") count")], from: b }))).rows[0].count
+      count: await remult!.repo(Bottles).count(),
+      countries: (await db!.execute(`count (distinct ${await b.fields.country?.getDbName()}) count from ${await b.getDbName()}`)).rows[0].count
     }
   }
 }
@@ -59,7 +60,7 @@ export class RunningNumberComponent implements OnInit {
   }
   theValue = 0;
   balanceAnimationDelta = 0;
-  interval: NodeJS.Timer;
+  interval!: NodeJS.Timer;
   private animateChange(change: number) {
     if (this.interval)
       clearInterval(this.interval);
