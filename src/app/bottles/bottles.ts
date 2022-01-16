@@ -1,4 +1,4 @@
-import { IdEntity, Entity, OneToMany, Field, DateOnlyField, IntegerField, Remult, Allow, Filter, EntityFilter, ContainsStringValueFilter } from 'remult';
+import { IdEntity, Entity, OneToMany, Field, DateOnlyField, IntegerField, Remult, Allow, Filter, EntityFilter, ContainsStringValueFilter, isBackend } from 'remult';
 
 import { Countries, BottleTypes, Shapes, Types, States, Locations } from '../manage/countries';
 import { Roles } from '../users/roles';
@@ -107,9 +107,10 @@ export class Bottles extends IdEntity {
     allowApiRead: Allow.authenticated,
     defaultOrderBy: { num: "asc" }
 }, (options, remult) => options.saving = async (self) => {
-    for (const smallImage of await remult.repo(SmallImages).find({ where: { bottleId: self.bottleId } })) {
-        await smallImage.delete();
-    }
+    if (isBackend())
+        for (const smallImage of await remult.repo(SmallImages).find({ where: { bottleId: self.bottleId } })) {
+            await smallImage.delete();
+        }
 })
 export class BottleImages extends IdEntity {
     @Field()
