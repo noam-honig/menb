@@ -4,7 +4,7 @@ import * as express from 'express';
 import { remultExpress } from 'remult/remult-express';
 import { config } from 'dotenv';
 import sslRedirect from 'heroku-ssl-redirect'
-import { createPostgresConnection } from 'remult/postgres';
+import { createPostgresConnection, PostgresClient, PostgresDataProvider, PostgresPool } from 'remult/postgres';
 import * as swaggerUi from 'swagger-ui-express';
 import * as helmet from 'helmet';
 import * as jwt from 'express-jwt';
@@ -13,6 +13,8 @@ import { getJwtTokenSignKey } from '../app/users/users'
 import '../app/bottles/bottles';
 import { BottleImages, SmallImages } from '../app/bottles/bottles';
 import * as sharp from 'sharp';
+import { Pool, QueryResult } from 'pg';
+import { SqlDatabase } from 'remult';
 
 async function startup() {
     config(); //loads the configuration from the .env file
@@ -26,8 +28,15 @@ async function startup() {
         })
     );
     const dataProvider = async () => {
-        if (process.env['NODE_ENV'] === "production")
-            return createPostgresConnection({ configuration: "heroku", autoCreateTables: true, sslInDev: true })
+        if (process.env['NODE_ENV'] === "production") {
+            const pool = new Pool({
+                connectionString: process.env['DATABASE_URL'],
+                ssl: {
+                    rejectUnauthorized: false
+                }
+            });
+            return new SqlDatabase(new PostgresDataProvider(new PostgresSchemaWrapper(pool, 'menb')));
+        }
         return undefined;
     }
     let api = remultExpress({
@@ -106,3 +115,26 @@ startup();
 * show older bottles first
 * V - Add bottle type
 */
+
+export class PostgresSchemaWrapper implements PostgresPool {
+    constructor(private pool: Pool, private schema: string) {
+
+    }
+    async connect(): Promise<PostgresClient> {
+        let r = await this.pool.connect();
+
+        await r.query('set search_path to ' + this.schema);
+        return r;
+    }
+    async query(queryText: string, values?: any[]): Promise<QueryResult> {
+        let c = await this.connect();
+        try {
+            return await c.query(queryText, values);
+        }
+        finally {
+            c.release();
+        }
+
+    }
+}
+
