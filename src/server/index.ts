@@ -16,6 +16,29 @@ import * as sharp from 'sharp';
 import { Pool, QueryResult } from 'pg';
 import { SqlDatabase } from 'remult';
 
+export class PostgresSchemaWrapper implements PostgresPool {
+    constructor(private pool: Pool, private schema: string) {
+
+    }
+    async connect(): Promise<PostgresClient> {
+        let r = await this.pool.connect();
+
+        await r.query('set search_path to ' + this.schema);
+        return r;
+    }
+    async query(queryText: string, values?: any[]): Promise<QueryResult> {
+        let c = await this.connect();
+        try {
+            return await c.query(queryText, values);
+        }
+        finally {
+            c.release();
+        }
+
+    }
+}
+
+
 async function startup() {
     config(); //loads the configuration from the .env file
     const app = express();
@@ -116,25 +139,4 @@ startup();
 * V - Add bottle type
 */
 
-export class PostgresSchemaWrapper implements PostgresPool {
-    constructor(private pool: Pool, private schema: string) {
-
-    }
-    async connect(): Promise<PostgresClient> {
-        let r = await this.pool.connect();
-
-        await r.query('set search_path to ' + this.schema);
-        return r;
-    }
-    async query(queryText: string, values?: any[]): Promise<QueryResult> {
-        let c = await this.connect();
-        try {
-            return await c.query(queryText, values);
-        }
-        finally {
-            c.release();
-        }
-
-    }
-}
 
