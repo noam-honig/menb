@@ -4,7 +4,7 @@ import * as express from 'express';
 import { remultExpress } from 'remult/remult-express';
 import { config } from 'dotenv';
 import sslRedirect from 'heroku-ssl-redirect'
-import { createPostgresConnection, PostgresClient, PostgresDataProvider, PostgresPool } from 'remult/postgres';
+import { createPostgresConnection, PostgresClient, PostgresDataProvider, PostgresPool, PostgresSchemaBuilder } from 'remult/postgres';
 import * as swaggerUi from 'swagger-ui-express';
 import * as helmet from 'helmet';
 import * as jwt from 'express-jwt';
@@ -14,7 +14,7 @@ import '../app/bottles/bottles';
 import { BottleImages, SmallImages } from '../app/bottles/bottles';
 import * as sharp from 'sharp';
 import { Pool, QueryResult } from 'pg';
-import { SqlDatabase } from 'remult';
+import { Remult, SqlDatabase } from 'remult';
 
 export class PostgresSchemaWrapper implements PostgresPool {
     constructor(private pool: Pool, private schema: string) {
@@ -58,7 +58,13 @@ async function startup() {
                     rejectUnauthorized: false
                 }
             });
-            return new SqlDatabase(new PostgresDataProvider(new PostgresSchemaWrapper(pool, 'menb')));
+            const schema = process.env["SCHEMA"] || 'menb';
+            const result = new SqlDatabase(new PostgresDataProvider(new PostgresSchemaWrapper(pool, schema)));
+            var sb = new PostgresSchemaBuilder(result, schema);
+            const remult = new Remult();
+            remult._dataSource = result;
+            await sb.verifyStructureOfAllEntities(remult)
+            return result;
         }
         return undefined;
     }
