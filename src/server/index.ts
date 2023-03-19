@@ -136,7 +136,7 @@ async function startup() {
       }
     } catch (err: any) {
       console.log({ url: req.url, err });
-      res.sendStatus(500).json(err);
+      res.status(500).json(err);
     }
   });
 
