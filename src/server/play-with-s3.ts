@@ -11,11 +11,11 @@ import { promisify } from 'util';
 
 export const config = {
   schema: 'menb',
-  folder: 'bottleImages/',
+  folder: 'bottleImages',
 };
 
 export async function playWithS3(remult: Remult) {
-  return;
+  //return;
   let i = 0;
   const query = await remult.repo(BottleImages).query({
     where: {
