@@ -9,7 +9,10 @@ import { BottleImages } from '../app/bottles/bottles';
 import { pipeline } from 'stream';
 import { promisify } from 'util';
 
-const prefix = 'men/bottleImages/';
+export const config = {
+  schema: 'menb',
+  folder: 'bottleImages/',
+};
 
 export async function playWithS3(remult: Remult) {
   return;
@@ -41,7 +44,7 @@ export async function base64ToS3(key: string, image: string) {
   const result = await s3Client.send(
     new PutObjectCommand({
       Bucket: 'menb',
-      Key: prefix + key,
+      Key: config.schema + '/' + config.folder + '/' + key,
       ContentType: type,
       Body: buffer,
     })
@@ -54,7 +57,7 @@ export async function getFromS3(key: string) {
   const result = await s3Client.send(
     new GetObjectCommand({
       Bucket: 'menb',
-      Key: prefix + key,
+      Key: config.schema + '/' + config.folder + '/' + key,
     })
   );
   return {
