@@ -21,6 +21,7 @@ import { BottleImages, SmallImages } from '../app/bottles/bottles';
 import * as sharp from 'sharp';
 import { Pool, QueryResult } from 'pg';
 import { Remult, SqlDatabase } from 'remult';
+import { getFromS3, playWithS3 } from './play-with-s3';
 
 export class PostgresSchemaWrapper implements PostgresPool {
   constructor(private pool: Pool, private schema: string) {}
@@ -58,7 +59,7 @@ async function startup() {
     })
   );
   const dataProvider = async () => {
-    if (process.env['NODE_ENV'] === 'production') {
+    if (process.env['DATABASE_URL']) {
       const pool = new Pool({
         connectionString: process.env['DATABASE_URL'],
         ssl: {
@@ -86,6 +87,12 @@ async function startup() {
     swaggerUi.serve,
     swaggerUi.setup(api.openApiDoc({ title: 'remult-react-todo' }))
   );
+  app.get('/api/test-noam', async (req, res) => {
+    const { writeToResponse } = await getFromS3(
+      'c0626bdf-4d6b-4638-8e36-1fb71a3d821c'
+    );
+    await writeToResponse(res);
+  });
   app.get('/api/images/:id', async (req, res) => {
     try {
       const noImage = () =>
@@ -96,15 +103,21 @@ async function startup() {
       }
       let remult = await api.getRemult(req);
       const getImage = async () => {
-        let i = await remult
-          .repo(BottleImages)
-          .findFirst({ bottleId: req.params.id });
+        let num = req.query['num'];
+        let i = await remult.repo(BottleImages).findFirst({
+          bottleId: req.params.id,
+          num: num ? Number(num) : undefined,
+        });
         if (!i) {
           return { buffer: undefined, type: '' };
         }
+        if (i.image === 's3') {
+          const r = await getFromS3(i.id);
+          return { buffer: await r.getBuffer(), type: r.ContentType! };
+        }
         let split = i.image.split(',');
         let type = split[0].substring(5).replace(';base64', '');
-        return { buffer: split[1], type };
+        return { buffer: Buffer.from(split[1], 'base64'), type };
       };
 
       if (req.query['small'] === '1') {
@@ -115,10 +128,7 @@ async function startup() {
           let { buffer, type } = await getImage();
           if (!buffer) return noImage();
           smallImage.image = await (
-            await sharp(Buffer.from(buffer, 'base64'))
-              .resize(200)
-              .withMetadata()
-              .toBuffer()
+            await sharp(buffer).resize(200).withMetadata().toBuffer()
           ).toString('base64');
           smallImage.contentType = type;
           await smallImage.save();
@@ -132,7 +142,7 @@ async function startup() {
           return noImage();
         }
         res.contentType(type);
-        res.send(Buffer.from(buffer, 'base64'));
+        res.send(buffer);
       }
     } catch (err: any) {
       console.log({ url: req.url, err });
@@ -148,6 +158,7 @@ async function startup() {
       res.sendStatus(500);
     }
   });
+  await playWithS3(await api.getRemult({} as any));
   let port = process.env['PORT'] || 3000;
   app.listen(port);
 }

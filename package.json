@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "~13.3.4",
     "@angular/router": "~13.3.4",
     "@auth0/angular-jwt": "^5.0.2",
+    "@aws-sdk/client-s3": "^3.521.0",
     "@remult/angular": "^0.10.9",
     "chart.js": "^3.7.0",
     "compression": "^1.7.3",
@@ -70,6 +71,11 @@
   },
   "browser": {
     "jsonwebtoken": false,
-    "password-hash": false
+    "password-hash": false,
+    "@aws-sdk/client-s3": false,
+    "pipeline": false,
+    "promisify": false,
+    "util": false,
+    "stream": false
   }
 }

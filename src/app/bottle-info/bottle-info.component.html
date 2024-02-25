@@ -1,70 +1,89 @@
 <div mat-dialog-content *ngIf="args.bottle">
+  <div>
+    <div class="two-columns">
+      <data-area [settings]="rightArea"></data-area>
+      <div>
+        <data-area [settings]="leftArea"></data-area>
 
-    <div>
-        <div class="two-columns">
-            <data-area [settings]="rightArea"></data-area>
-            <div>
-                <data-area [settings]="leftArea"></data-area>
-               
-                <div style="text-align: center; min-height:200px;position: relative;">
+        <div style="text-align: center; min-height: 200px; position: relative">
+          <img
+            *ngIf="image"
+            [src]="
+              image._.wasChanged()
+                ? image.image
+                : '/api/images/' + image.bottleId + '?num=' + image.num
+            "
+            style="max-width: 400px; width: 100%; height: 100%"
+          />
+          <div
+            [class.dontDisplay]="!inDrag && this.image.image"
+            style="
+              position: absolute;
+              top: 0px;
+              background-color: lightgray;
+              height: 100%;
+              width: 100%;
 
-                    <img *ngIf="image" [src]="image.image" style="max-width:400px;width:100%;height:100%">
-                    <div [class.dontDisplay]="!inDrag&&this.image.image" style="position: absolute;
-                    top: 0px;
-                    background-color: lightgray;
-                    height: 100%;
-                    width: 100%;
-                    
-                    justify-content: space-around;
-                    align-items: center;
-                " (dragenter)="dragEnter($event)" (dragover)="dragEnter($event)" (dragleave)="dragLeave($event)"
-                        (drop)="dropFile($event);" (click)="openImage()">
-                        <h1>מקם קובץ תמונה כאן</h1>
-                    </div>
-
-                </div>
-                <div style="    display: flex;
-                justify-content: space-between;">
-                    <input #fileInput type="file" (input)="onFileInput($event)" accept="image/*" id="uploadImage"
-                        style="display:none" />
-
-                    <button mat-icon-button [disabled]="imageIndex==0" (click)="back()">
-
-                        <mat-icon>
-                            arrow_forward_ios
-                        </mat-icon>
-                    </button>
-                    <button mat-icon-button>
-                        <label for="uploadImage">
-                            <mat-icon style="padding-top:10px">photo_camera</mat-icon>
-                        </label>
-                    </button>
-
-                    <button mat-icon-button [disabled]="imageIndex==0&&!image.image" (click)="deletePhoto()">
-                        <mat-icon>
-                            delete
-                        </mat-icon>
-                    </button>
-
-                    <button mat-icon-button [disabled]="!image.image" (click)="addAPhoto()">
-                        <mat-icon >
-                            add_a_photo
-                        </mat-icon>
-                    </button>
-                    <button mat-icon-button [disabled]="imageIndex>=images.length-1" (click)="next()">
-                        <mat-icon >
-                            arrow_back_ios
-                        </mat-icon>
-                    </button>
-                </div>
-            </div>
+              justify-content: space-around;
+              align-items: center;
+            "
+            (dragenter)="dragEnter($event)"
+            (dragover)="dragEnter($event)"
+            (dragleave)="dragLeave($event)"
+            (drop)="dropFile($event)"
+            (click)="openImage()"
+          >
+            <h1>מקם קובץ תמונה כאן</h1>
+          </div>
         </div>
-        <data-area [settings]="bottomArea"></data-area>
+        <div style="display: flex; justify-content: space-between">
+          <input
+            #fileInput
+            type="file"
+            (input)="onFileInput($event)"
+            accept="image/*"
+            id="uploadImage"
+            style="display: none"
+          />
+
+          <button mat-icon-button [disabled]="imageIndex == 0" (click)="back()">
+            <mat-icon> arrow_back_ios </mat-icon>
+          </button>
+          <button mat-icon-button>
+            <label for="uploadImage">
+              <mat-icon style="padding-top: 10px">photo_camera</mat-icon>
+            </label>
+          </button>
+
+          <button
+            mat-icon-button
+            [disabled]="imageIndex == 0 && !image.image"
+            (click)="deletePhoto()"
+          >
+            <mat-icon> delete </mat-icon>
+          </button>
+
+          <button
+            mat-icon-button
+            [disabled]="!image.image"
+            (click)="addAPhoto()"
+          >
+            <mat-icon> add_a_photo </mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            [disabled]="imageIndex >= images.length - 1"
+            (click)="next()"
+          >
+            <mat-icon> arrow_forward_ios </mat-icon>
+          </button>
+        </div>
+      </div>
     </div>
+    <data-area [settings]="bottomArea"></data-area>
+  </div>
 </div>
 <div mat-dialog-actions>
-    <button mat-raised-button (click)="close()">בטל</button>
-    <button mat-raised-button (click)="save()" color="primary">שמור</button>
-
-
+  <button mat-raised-button (click)="close()">בטל</button>
+  <button mat-raised-button (click)="save()" color="primary">שמור</button>
 </div>
