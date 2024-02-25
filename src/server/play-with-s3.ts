@@ -9,18 +9,23 @@ import { BottleImages } from '../app/bottles/bottles';
 import { pipeline } from 'stream';
 import { promisify } from 'util';
 
-const prefix = 'men/botteImages/';
+const prefix = 'men/bottleImages/';
+
 export async function playWithS3(remult: Remult) {
   return;
-  for (const image of await remult.repo(BottleImages).find({
+  let i = 0;
+  const query = await remult.repo(BottleImages).query({
     where: {
       image: { '!=': 's3' },
     },
-  })) {
+  });
+  let total = await query.count();
+  for await (const image of query) {
     const result = await base64ToS3(image.id, image.image);
     if (result.$metadata.httpStatusCode == 200) {
       image.image = 's3';
       await image.save();
+      console.log('saved', i++, 'of', total);
     } else {
       console.log(result);
     }
