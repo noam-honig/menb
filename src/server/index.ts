@@ -21,7 +21,7 @@ import { BottleImages, SmallImages } from '../app/bottles/bottles';
 import * as sharp from 'sharp';
 import { Pool, QueryResult } from 'pg';
 import { Remult, SqlDatabase } from 'remult';
-import { getFromS3, playWithS3 } from './play-with-s3';
+import { getFromS3, playWithS3, config as s3Config } from './play-with-s3';
 
 export class PostgresSchemaWrapper implements PostgresPool {
   constructor(private pool: Pool, private schema: string) {}
@@ -67,6 +67,7 @@ async function startup() {
         },
       });
       const schema = process.env['SCHEMA'] || 'menb';
+      s3Config.schema = schema;
       const result = new SqlDatabase(
         new PostgresDataProvider(new PostgresSchemaWrapper(pool, schema))
       );
