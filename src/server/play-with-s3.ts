@@ -15,7 +15,7 @@ export const config = {
 };
 
 export async function playWithS3(remult: Remult) {
-  //return;
+  return;
   let i = 0;
   const query = await remult.repo(BottleImages).query({
     where: {
