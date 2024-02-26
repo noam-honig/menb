@@ -1,44 +1,74 @@
-<div class="full-page" style="background:linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(assets/bg.jpeg);
-background-position: center;">
-    <div class="grow-item">
-        <div class="mat-elevation-z8" style="display: flex;
-    border-radius: 10px;
-    background-color: white;
-    padding:10px;
-    font-size:18px;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 2px;
-    position: sticky;
-    top:0;
-    z-index: 10;
-    margin:8px">
-            <button mat-icon-button [matMenuTriggerFor]="menu">
-                <mat-icon>menu</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="advancedSearch()">Advanced Search</button>
-                <button mat-menu-item (click)="auth.showSignIn()"
-                    *ngIf="!remult.authenticated()">{{terms.signIn}}</button>
-                <button mat-menu-item (click)="toBottles()" *ngIf="isAdmin()">Bottles</button>
-                <button mat-menu-item (click)="auth.signOut()" *ngIf="remult.authenticated()">{{terms.signOut}}</button>
-            </mat-menu>
-            <data-control [field]="$.searchString" style="    flex-grow: 1;
-      margin-left: 10px;"></data-control>
-            <div style="margin-left:5px">
-                <app-number [value]="count"></app-number> Bottles
-            </div>
-        </div>
-        <div class="container ">
-            <app-bottle-card *ngFor="let b of bottles" class="example-card" [b]="b"></app-bottle-card>
-
-            <div #my width="100%" style=" width: 100%;
+<div
+  class="full-page"
+  style="
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+      url(assets/bg.jpeg);
+    background-position: center;
+  "
+>
+  <div class="grow-item">
+    <div
+      class="mat-elevation-z8"
+      style="
         display: flex;
-        justify-content: center;">.<span *ngIf="loading">
-                    <mat-spinner class="spin"></mat-spinner>
-                </span></div>
-        </div>
-
-
+        border-radius: 10px;
+        background-color: white;
+        padding: 10px;
+        font-size: 18px;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 2px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        margin: 8px;
+      "
+    >
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="advancedSearch()">
+          Advanced Search
+        </button>
+        <button
+          mat-menu-item
+          (click)="auth.showSignIn()"
+          *ngIf="!remult.authenticated()"
+        >
+          {{ terms.signIn }}
+        </button>
+        <button mat-menu-item (click)="toBottles()" *ngIf="isAdmin()">
+          Bottles
+        </button>
+        <button
+          mat-menu-item
+          (click)="auth.signOut()"
+          *ngIf="remult.authenticated()"
+        >
+          {{ terms.signOut }}
+        </button>
+      </mat-menu>
+      <data-control
+        [field]="$.searchString"
+        style="flex-grow: 1; margin-left: 10px"
+      ></data-control>
+      <div style="margin-left: 5px">
+        <app-number [value]="count"></app-number> Bottles
+      </div>
     </div>
+    <div class="container">
+      <app-bottle-card
+        *ngFor="let b of bottles"
+        class="example-card"
+        [b]="b"
+      ></app-bottle-card>
+
+      <div #my style="display: flex; justify-content: center">
+        .<span *ngIf="loading">
+          <mat-spinner class="spin"></mat-spinner>
+        </span>
+      </div>
+    </div>
+  </div>
 </div>

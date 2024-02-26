@@ -3,25 +3,28 @@ import { BottleImages, Bottles } from '../bottles/bottles';
 
 import { MatDialogRef } from '@angular/material/dialog';
 import { UploadImageComponent } from '../bottles/upload-image.component';
-import { openDialog, DataAreaSettings, SelectValueDialogComponent, DataControlSettings } from '@remult/angular';
+import {
+  openDialog,
+  DataAreaSettings,
+  SelectValueDialogComponent,
+  DataControlSettings,
+} from '@remult/angular';
 import { FieldMetadata, FieldRef, Remult } from 'remult';
 
 @Component({
   selector: 'app-bottle-info',
   templateUrl: './bottle-info.component.html',
-  styleUrls: ['./bottle-info.component.scss']
+  styleUrls: ['./bottle-info.component.scss'],
 })
 export class BottleInfoComponent implements OnInit {
-
   constructor(private dialog: MatDialogRef<any>, private remult: Remult) {
     dialog.afterClosed().subscribe(() => {
-      if (this.saved)
-        this.args.bottle._.undoChanges();
+      if (this.saved) this.args.bottle._.undoChanges();
     });
   }
   args!: {
-    bottle: Bottles
-  }
+    bottle: Bottles;
+  };
   images: BottleImages[] = [];
   imageIndex = 0;
   get image() {
@@ -32,8 +35,7 @@ export class BottleInfoComponent implements OnInit {
     return this.images[this.imageIndex];
   }
   back() {
-    if (this.imageIndex > 0)
-      this.imageIndex--;
+    if (this.imageIndex > 0) this.imageIndex--;
   }
   next() {
     if (this.imageIndex < this.images.length - 1) {
@@ -47,7 +49,7 @@ export class BottleInfoComponent implements OnInit {
   }
   deletePhoto() {
     this.toDeleteImages.push(this.image);
-    this.images = this.images.filter(x => x != this.image);
+    this.images = this.images.filter((x) => x != this.image);
     if (this.imageIndex >= this.images.length)
       this.imageIndex = this.images.length - 1;
   }
@@ -66,16 +68,10 @@ export class BottleInfoComponent implements OnInit {
         [b.bottleType!, b.shape!].map(mapFieldType),
         b.shapeComments,
         [b.alcohol, b.volume],
-
-
-      ]
+      ],
     });
     this.leftArea = new DataAreaSettings({
-      fields: () => [
-        [b.type!,
-        b.subType!].map(mapFieldType),
-        b.quantity
-      ]
+      fields: () => [[b.type!, b.subType!].map(mapFieldType), b.quantity],
     });
     this.bottomArea = new DataAreaSettings({
       fields: () => [
@@ -83,15 +79,17 @@ export class BottleInfoComponent implements OnInit {
         mapFieldType(b.location!),
         [b.entryDate!, b.origin],
         [b.cost, b.worth],
-        [b.exitDate!, b.exitReason]
-
-      ]
+        [b.exitDate!, b.exitReason],
+      ],
     });
     if (!this.args.bottle.isNew()) {
       this.args.bottle._.reload();
-      this.remult.repo(BottleImages).find({ where: { bottleId: this.args.bottle.id } }).then(x => {
-        this.images = x;
-      });
+      this.remult
+        .repo(BottleImages)
+        .find({ where: { bottleId: this.args.bottle.id } })
+        .then((x) => {
+          this.images = x;
+        });
     }
   }
 
@@ -114,34 +112,39 @@ export class BottleInfoComponent implements OnInit {
     this.dialog.close();
   }
   async upload() {
-    if (this.args.bottle.isNew())
-      await this.args.bottle.save();
-    await openDialog(UploadImageComponent, x => x.args = {
-      bottleId: this.args.bottle.id
-      ,
-      afterUpload: (image, fileName) => {
-        this.image.image = image;
-        this.image.fileName = fileName;
-      }
-    });
+    if (this.args.bottle.isNew()) await this.args.bottle.save();
+    await openDialog(
+      UploadImageComponent,
+      (x) =>
+        (x.args = {
+          bottleId: this.args.bottle.id,
+          afterUpload: (image, fileName) => {
+            this.image.image = image;
+            this.image.fileName = fileName;
+          },
+        })
+    );
+  }
+  imageSrc(image: BottleImages) {
+    return image._.wasChanged()
+      ? image.image
+      : '/api/images/' + image.bottleId + '?num=' + image.num;
   }
   openImage() {
     if (this.image.image) {
       var image = new Image();
-      image.src = this.image.image;;
+      image.src = this.imageSrc(this.image);
       image.style.height = '100%';
 
-      var w = window.open("");
+      var w = window.open('');
       w!.document.write(image.outerHTML);
     }
   }
   async dropFile(e: DragEvent) {
-
     e.preventDefault();
     e.stopPropagation();
     this.inDrag = false;
     await this.loadFiles(e?.dataTransfer?.files);
-
   }
   private async loadFiles(files: any) {
     for (let index = 0; index < files.length; index++) {
@@ -154,7 +157,6 @@ export class BottleInfoComponent implements OnInit {
           this.image.image = e.target.result.toString();
           this.image.fileName = f.name;
           res({});
-
         };
         fileReader.readAsDataURL(f);
       });
@@ -167,27 +169,20 @@ export class BottleInfoComponent implements OnInit {
   dragEnter(e: DragEvent) {
     this.inDrag = true;
     this.preventDefault(e);
-
   }
   dragLeave(e: DragEvent) {
     this.inDrag = false;
     this.preventDefault(e);
-
-
   }
   inDrag = false;
   preventDefault(eventArgs: any) {
     eventArgs.preventDefault();
     eventArgs.stopPropagation();
-
   }
-
 }
 export function mapFieldType(field: FieldMetadata | FieldRef) {
   let meta: FieldMetadata = (field as FieldRef).metadata;
-  if (!meta)
-    meta = field as FieldMetadata;
-
+  if (!meta) meta = field as FieldMetadata;
 
   if (meta.options.selectType) {
     return {
@@ -195,12 +190,16 @@ export function mapFieldType(field: FieldMetadata | FieldRef) {
       hideDataOnInput: true,
       getValue: (_, x) => x.value?.name,
       click: async (row: { remult: Remult }, col) => {
-        openDialog(SelectValueDialogComponent, async x => x.args({
-          values: (await row.remult.repo(meta.options.selectType!).find()).map(item => ({ caption: item.name, item })),
-          onSelect: (x) => col.value = x.item
-        }));
-      }
-    } as DataControlSettings
+        openDialog(SelectValueDialogComponent, async (x) =>
+          x.args({
+            values: (
+              await row.remult.repo(meta.options.selectType!).find()
+            ).map((item) => ({ caption: item.name, item })),
+            onSelect: (x) => (col.value = x.item),
+          })
+        );
+      },
+    } as DataControlSettings;
   }
   return { field };
 }
